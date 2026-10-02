@@ -14,9 +14,6 @@ next-env.d.ts
 /supabase/.temp/
 /supabase/.branches/
 
-# database schema, shared separately
-/supabase/migrations/
-
 # design workflow
 /temporary screenshots/
 /Reference/

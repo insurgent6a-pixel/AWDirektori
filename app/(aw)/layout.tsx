@@ -1,12 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { BottomBar, Footer, Header } from "./_components/shell";
 import { Toaster } from "./_components/ui";
 import { AuthProvider } from "./_lib/auth";
-
-// One typeface for everything. opsz: big sizes get Inter's display cut (tighter, finer) by themselves.
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap", axes: ["opsz"] });
+import { inter } from "./_lib/font";
 
 export const metadata: Metadata = {
   title: { default: "Direktori Lulusan AsiaWorks", template: "%s · Direktori AsiaWorks" },

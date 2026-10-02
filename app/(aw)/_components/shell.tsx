@@ -113,10 +113,17 @@ export function Header() {
           ) : (
             <Link
               href={isStaff ? "/staff" : "/akun"}
-              className="tap flex items-center gap-2 rounded-full border border-line bg-surface py-1 pr-3.5 pl-1 text-sm font-medium shadow-card hover:bg-page"
+              className="tap flex items-center gap-2 rounded-full border border-line bg-surface py-1 pr-3.5 pl-1 text-sm font-medium whitespace-nowrap shadow-card hover:bg-page"
             >
               <Avatar name={profile?.nickname || profile?.full_name || "A"} className="h-8 w-8" />
-              {isStaff ? "Konsol staf" : "Dasbor"}
+              {/* On the narrowest phones the name beside it leaves room for one word only. */}
+              {isStaff ? (
+                <span>
+                  Konsol<span className="max-[379px]:hidden"> staf</span>
+                </span>
+              ) : (
+                "Dasbor"
+              )}
             </Link>
           )}
         </div>

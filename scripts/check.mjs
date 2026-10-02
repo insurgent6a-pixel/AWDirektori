@@ -112,9 +112,9 @@ try {
     const { data: cleared } = await budi.rpc('save_profile', {}).throwOnError();
     assert.deepEqual([cleared.programs, cleared.batch_ia], [[], null]);
     assert.equal((await admin.from('profiles').update({ batch_ia: 5 }).eq('id', id.budi)).error?.code, '23514'); // the table agrees: no number without its program
-    // IB alone, without a number, is enough to ask (staff send it back, so budi asks again with his numbers in step 4)
-    const { data: ib } = await budi.rpc('save_profile', { p_programs: ['IB'], p_submit: true }).throwOnError();
-    assert.deepEqual([ib.verification, ib.programs, ib.batch_ib, ib.batch_lp], ['pending', ['IB'], null, null]);
+    // IB and IA, without a number for either, are enough to ask (staff send it back, so budi asks again with his numbers in step 4)
+    const { data: ib } = await budi.rpc('save_profile', { p_programs: ['IB', 'IA'], p_submit: true }).throwOnError();
+    assert.deepEqual([ib.verification, ib.programs, ib.batch_ib, ib.batch_ia, ib.batch_lp], ['pending', ['IB', 'IA'], null, null, null]);
     await staff.rpc('verify_graduate', { p_user: id.budi, p_approve: false, p_note: 'Nomor angkatannya menyusul' }).throwOnError();
     const { data: sent } = await ana.rpc('save_profile', { p_lp: 12, p_submit: true }).throwOnError();
     assert.deepEqual([sent.verification, sent.programs, sent.batch_lp, sent.batch_ib, sent.batch_ia], ['pending', ['LP'], 12, null, null]);
@@ -124,8 +124,14 @@ try {
     assert.deepEqual([later.role, later.verification, later.programs, later.batch_lp, later.batch_ib], ['member', 'pending', ['LP'], 12, null]);
   });
 
-  await step('4 verify_graduate: staff only; reject with a note, approve; an approval note goes to the audit log, not the profile', async () => {
+  await step('4 verify_graduate: staff only; reject with a note, approve; a half-filled profile cannot be approved; an approval note goes to the audit log, not the profile', async () => {
     assert.equal((await ana.rpc('verify_graduate', { p_user: id.ana, p_approve: true })).error?.code, DENIED);
+    // budi was sent back in step 3. What he saves without asking again may be half-filled, and that cannot be approved.
+    for (const half of [{ p_programs: ['LP'] }, {}]) {
+      await budi.rpc('save_profile', half).throwOnError();
+      assert.match((await staff.rpc('verify_graduate', { p_user: id.budi, p_approve: true })).error?.message, /belum lengkap/, JSON.stringify(half));
+    }
+    assert.equal((await budi.from('profiles').select('verification').eq('id', id.budi).single().throwOnError()).data.verification, 'rejected');
     await staff.rpc('verify_graduate', { p_user: id.ana, p_approve: false, p_note: 'Angkatan LP belum cocok' }).throwOnError();
     const { data: me } = await ana.from('profiles').select().eq('id', id.ana).single().throwOnError();
     assert.deepEqual([me.verification, me.verification_note], ['rejected', 'Angkatan LP belum cocok']);
@@ -274,6 +280,9 @@ try {
     for (const [args, want] of [
       [{ p_q: 'kop' }, [kopi]],
       [{ p_q: 'budi' }, [batik]], // the owner's nickname
+      [{ p_q: 'LP 13' }, [kopi, kelas]], // the owner's batch, of whichever program: ana is LP 13, budi LP 9, IB 4 and IA 6
+      [{ p_q: 'IA 6' }, [batik]],
+      [{ p_q: 'IB 4' }, [batik]],
       [{ p_q: 'wijaya' }, [kelas]], // ana's full name: shown on her nameless listing, hidden behind 'Kopi Check'
       [{ p_city: 'bogor' }, [kopi]],
       [{ p_category: 'Fashion & Aksesoris' }, [batik]],
