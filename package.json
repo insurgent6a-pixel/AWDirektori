@@ -1,0 +1,36 @@
+{
+  "name": "aw-direktori",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:up": "docker compose -f supabase/local/docker-compose.yml up -d --wait",
+    "db:down": "docker compose -f supabase/local/docker-compose.yml down",
+    "db:apply": "docker exec -i awdirektori-db-1 psql -U postgres -h 127.0.0.1 -d postgres -v ON_ERROR_STOP=1 -1 -q -f - < supabase/migrations/20261001000000_init.sql",
+    "db:reset": "docker compose -f supabase/local/docker-compose.yml down -v && docker compose -f supabase/local/docker-compose.yml up -d --wait && npm run db:apply",
+    "db:types": "docker run --rm --network awdirektori_default -e PG_META_DB_URL=postgresql://postgres:postgres@db:5432/postgres -e PG_META_GENERATE_TYPES=typescript -e PG_META_GENERATE_TYPES_INCLUDED_SCHEMAS=public -e PG_META_GENERATE_TYPES_DETECT_ONE_TO_ONE_RELATIONSHIPS=true supabase/postgres-meta:v0.99.0 node dist/server/server.js > \"app/(aw)/_lib/database.types.ts\"",
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "check": "node --env-file=.env.local scripts/check.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.49.0",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.12",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "puppeteer-core": "^25.12.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

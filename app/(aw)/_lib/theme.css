@@ -1,0 +1,516 @@
+/* AsiaWorks Direktori design tokens and motion. Import this after "tailwindcss" in the global stylesheet.
+   Every token and keyframe here has a name of its own and nothing resets Tailwind's defaults, so importing this
+   into an existing site's stylesheet leaves that site's styles as they are. */
+
+@theme {
+  /* Grayish white and red maroon, plus quiet status tones. The directory uses only these, never Tailwind's defaults. */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-page: #f3f2f0;
+  --color-surface: #ffffff;
+  --color-sunken: #eceae6;
+  --color-line: #e3dfda;
+  --color-ink: #1c1818;
+  --color-ink-soft: #6f6965;
+  --color-maroon: #8b1a1a;
+  --color-maroon-dark: #6f1414;
+  --color-maroon-deep: #4a0d0f;
+  --color-blush: #f7eceb;
+  --color-blush-line: #ebd3d1;
+  --color-gold: #7d5f28;
+  --color-gold-soft: #f5efe0;
+  --color-green: #2f6b4f;
+  --color-green-soft: #e7f1eb;
+  --color-amber: #9a5b13;
+  --color-amber-soft: #fbf1e0;
+  --color-red: #b42318;
+  --color-red-soft: #fdecea;
+
+  /* Depth: base (page) -> card -> raised -> float. Shadows are layered and tinted maroon. */
+  --shadow-card: 0 1px 2px rgb(74 13 15 / 0.05), 0 6px 16px -8px rgb(74 13 15 / 0.1);
+  --shadow-raised: 0 1px 2px rgb(74 13 15 / 0.06), 0 14px 30px -12px rgb(74 13 15 / 0.2);
+  --shadow-float: 0 2px 6px rgb(74 13 15 / 0.08), 0 28px 56px -18px rgb(74 13 15 / 0.32);
+  --shadow-button: 0 1px 1px rgb(74 13 15 / 0.25), 0 8px 16px -6px rgb(139 26 26 / 0.5);
+
+  /* Easing. The two springs are sampled from a damped spring (bounce 0.25 and 0.5). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: linear(
+    0, 0.03, 0.106, 0.207, 0.321, 0.436, 0.546, 0.645, 0.733, 0.807, 0.868, 0.916, 0.954, 0.982, 1.002, 1.015,
+    1.023, 1.027, 1.028, 1.028, 1.026, 1.023, 1.019, 1.016, 1.013, 1.01, 1.008, 1.006, 1
+  );
+  --ease-bouncy: linear(
+    0, 0.042, 0.15, 0.298, 0.463, 0.628, 0.779, 0.908, 1.01, 1.085, 1.133, 1.157, 1.163, 1.154, 1.135, 1.11, 1.083,
+    1.056, 1.032, 1.012, 0.996, 0.985, 0.977, 0.974, 0.974, 0.975, 0.979, 0.983, 0.987, 0.992, 0.995, 0.999, 1.001,
+    1.003, 1.004, 1.004, 1
+  );
+
+  --animate-rise: aw-rise 0.5s var(--ease-spring) backwards;
+  --animate-pop: aw-pop 0.6s var(--ease-bouncy);
+  --animate-fade: aw-fade 0.2s ease backwards;
+  --animate-shimmer: aw-shimmer 1.4s linear infinite;
+  --animate-toast: aw-toast 3.4s both; /* in, stay, out: the toast is removed when this ends */
+
+  @keyframes aw-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @keyframes aw-pop {
+    from {
+      transform: scale(0.7);
+    }
+  }
+  @keyframes aw-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes aw-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes aw-toast {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+      animation-timing-function: var(--ease-spring);
+    }
+    15%,
+    92% {
+      opacity: 1;
+      transform: none;
+      animation-timing-function: var(--ease-out);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* Browsers without linear() (Safari before 17.2, Chrome before 113) get a close cubic curve instead of no motion. */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-spring: cubic-bezier(0.3, 1.2, 0.5, 1);
+    --ease-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+
+@layer base {
+.aw {
+  min-height: 100dvh;
+  background: var(--color-page);
+  color: var(--color-ink);
+  /* One typeface for everything: Inter (next/font sets --font-inter on this element). */
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  /* a phone held sideways: keep clear of the notch (the page may draw under it, see the viewport in layout.tsx) */
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+.aw :focus-visible {
+  outline: 2px solid var(--color-maroon);
+  outline-offset: 2px;
+}
+.aw ::selection {
+  background: var(--color-blush-line);
+}
+/* Tailwind's reset gives every button the arrow. Anything pressable here shows the hand. */
+.aw button:not(:disabled),
+.aw select {
+  cursor: pointer;
+}
+}
+
+/* 16px keeps iOS from zooming the page when a field gets focus. Unlayered so no text-size utility can undo it. */
+.aw input,
+.aw textarea,
+.aw select {
+  font-size: 1rem;
+}
+/* A mouse cannot trigger that zoom, so desktop fields match the 14px controls beside them. */
+@media (hover: hover) and (pointer: fine) {
+  .aw input,
+  .aw textarea,
+  .aw select {
+    font-size: 0.875rem;
+  }
+}
+/* ── Type ─────────────────────────────────────────────────────────── */
+
+/* Headlines are the same Inter as the text: they stand out by size, weight and tight spacing, not by a second face. */
+@utility h-display {
+  font-weight: 700;
+  font-size: clamp(2rem, 1.3rem + 3vw, 3.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+@utility h-section {
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+@utility h-card {
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+/* The maroon half of a headline. */
+@utility accent {
+  color: var(--color-maroon);
+}
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-maroon);
+}
+@utility body-copy {
+  line-height: 1.7;
+  color: var(--color-ink-soft);
+  text-wrap: pretty;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────── */
+
+/* Press feedback: squish at once, spring back with a bounce. `tap` for controls, `tap-soft` for whole cards. */
+@utility tap {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.62s var(--ease-bouncy);
+  &:active {
+    transform: scale(0.94);
+    transition: transform 0.12s var(--ease-out);
+  }
+}
+@utility tap-soft {
+  touch-action: manipulation;
+  transition: transform 0.62s var(--ease-bouncy);
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.12s var(--ease-out);
+  }
+}
+
+/* List entrance. Set style={{ "--i": index }} on each item for the stagger. */
+@utility rise {
+  animation: var(--animate-rise);
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* Desktop hover lift. The bigger shadow sits on a pseudo-element so only opacity and transform animate. */
+@utility lift {
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.45s var(--ease-spring);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--shadow-raised);
+    opacity: 0;
+    transition: opacity 0.25s var(--ease-out);
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-3px);
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* Loading placeholder with a moving sheen. */
+@utility skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-sunken);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6), transparent);
+    animation: var(--animate-shimmer);
+  }
+}
+
+/* Hero and call-to-action backdrop: layered blush gradients over the page tone, with grain. */
+@utility wash {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 80% at 88% 0%, rgb(139 26 26 / 0.09), transparent 70%),
+    radial-gradient(45% 60% at 8% 100%, rgb(138 106 47 / 0.08), transparent 70%),
+    radial-gradient(40% 50% at 45% 30%, rgb(255 255 255 / 0.7), transparent 70%), var(--color-page);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.05 0 0 0 0 0.06 0 0 0 0.12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Grain over a dark backdrop (a banner without a picture), so a flat gradient gets some depth. */
+@utility grain {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* The hand-drawn underline under a headline's accent phrase. A brighter red than the maroon, as in the reference. */
+@utility squiggle {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8c40-6 70 3 110-1s70-6 100-2 60 4 86-1' fill='none' stroke='%23d7302a' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat bottom / 100% 0.32em;
+  padding-bottom: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Sheet: a native <dialog>. Bottom sheet on phones, centred card on larger screens. ─────── */
+
+.aw-sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 92dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  /* The first shadow fills the gap under the sheet while the spring overshoots. */
+  box-shadow:
+    0 4rem 0 var(--color-surface),
+    var(--shadow-float);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    transform 0.28s var(--ease-drawer),
+    opacity 0.2s linear;
+}
+.aw-sheet[open] {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform 0.5s var(--ease-spring),
+    opacity 0.15s linear;
+}
+/* The exit animation, where the browser can keep a closing dialog on screen. (A second "transition" line in the rules
+   above would not fall back: a declaration with var() in it is only rejected after the first one is already gone.) */
+@supports (transition-behavior: allow-discrete) {
+  .aw-sheet {
+    transition:
+      transform 0.28s var(--ease-drawer),
+      opacity 0.2s linear,
+      overlay 0.28s allow-discrete,
+      display 0.28s allow-discrete;
+  }
+  .aw-sheet[open] {
+    transition:
+      transform 0.5s var(--ease-spring),
+      opacity 0.15s linear,
+      overlay 0.5s allow-discrete,
+      display 0.5s allow-discrete;
+  }
+}
+.aw-sheet::backdrop {
+  background: rgb(28 24 24 / 0.5);
+  opacity: 0;
+  transition: opacity 0.28s linear;
+  transition:
+    opacity 0.28s linear,
+    overlay 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+}
+.aw-sheet[open]::backdrop {
+  opacity: 1;
+}
+/* The page behind an open sheet stays put: a swipe on the backdrop would otherwise scroll it. */
+html:has(.aw-sheet[open]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+@starting-style {
+  .aw-sheet[open] {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  .aw-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+@media (min-width: 40rem) {
+  .aw-sheet {
+    inset: 0;
+    width: min(32rem, calc(100% - 2rem));
+    height: fit-content;
+    margin: auto;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-float);
+    transform: translateY(1rem) scale(0.96);
+  }
+  @starting-style {
+    .aw-sheet[open] {
+      transform: translateY(1rem) scale(0.96);
+    }
+  }
+}
+
+/* ── Map (Leaflet) ────────────────────────────────────────────────── */
+
+.aw-map {
+  background: var(--color-sunken);
+  z-index: 0;
+}
+/* ".aw" in front: Leaflet's own font rules weigh the same as a single class and load later. */
+.aw .aw-map,
+.aw .aw-map .leaflet-control-zoom a {
+  font-family: inherit;
+}
+.aw-map .leaflet-tile-pane {
+  filter: grayscale(1) contrast(0.92) brightness(1.06);
+}
+.aw-map .leaflet-control-zoom {
+  border: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-raised);
+}
+/* ".aw" in front: Leaflet's own ".leaflet-touch .leaflet-bar a" (30px) weighs the same and loads later. */
+.aw .aw-map .leaflet-control-zoom a {
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  color: var(--color-ink);
+  border-color: var(--color-line);
+}
+.aw .aw-map .leaflet-control-zoom a:active {
+  background: var(--color-sunken);
+}
+.aw-map .leaflet-control-attribution a {
+  color: var(--color-ink-soft);
+}
+.aw-map .leaflet-popup-content-wrapper {
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-float);
+  font-family: inherit;
+}
+.aw-map .leaflet-popup-content {
+  margin: 0.75rem 0.875rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+/* "Lihat bisnis" in the popup (a plain string in map.tsx, with class "tap" for the press). ".aw" in front: Leaflet
+   colours its own links. */
+.aw .aw-map .leaflet-popup-content a {
+  display: inline-block;
+  padding-block: 0.375rem;
+  color: var(--color-maroon);
+  font-weight: 600;
+}
+.aw .aw-map .leaflet-popup-content a:hover {
+  text-decoration: underline;
+}
+.aw-pin {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50% 50% 50% 0;
+  rotate: -45deg;
+  background: var(--color-maroon);
+  border: 2px solid var(--color-white);
+  box-shadow: var(--shadow-raised);
+  animation: var(--animate-pop);
+  transition: scale 0.45s var(--ease-bouncy);
+}
+.aw-pin::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-white);
+}
+.aw-pin[data-active="true"] {
+  background: var(--color-maroon-deep);
+  scale: 1.2;
+}
+
+/* Phones: while someone types, the bottom bar would ride on top of the keyboard and take much of what is left. */
+@media (pointer: coarse) {
+  .aw:has(:is(input:not([type="checkbox"], [type="radio"], [type="file"]), textarea):focus) > nav[aria-label="Navigasi bawah"] {
+    display: none;
+  }
+}
+
+/* ── Reduced motion: keep fades, drop movement. ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .animate-toast {
+    animation: var(--animate-fade);
+  }
+  .animate-pop {
+    animation: none;
+  }
+  /* the switch thumb and the tab pill: arrive, do not travel */
+  .ease-bouncy,
+  .ease-spring {
+    transition-duration: 0s;
+  }
+  .tap:active,
+  .tap-soft:active,
+  .lift:hover {
+    transform: none;
+  }
+  .aw-sheet,
+  .aw-sheet[open] {
+    transform: none;
+    transition-duration: 0.15s;
+  }
+  .aw-pin,
+  .skeleton::after {
+    animation: none;
+    transition: none;
+  }
+}
