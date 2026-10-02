@@ -156,17 +156,25 @@ function PeluangForm({ row, onDone }: { row: Row | null; onDone: () => void }) {
     };
     setBusy(true);
     setError(null);
-    const { error } = row
-      ? await supabase.from("peluang").update(values).eq("id", row.id)
-      : await supabase.from("peluang").insert({ ...values, owner_id: user!.id, business_id: text("business_id") || null });
+    // The status comes back with the row: with staff's Auto Approve Peluang on, the database approves it at once.
+    const { data, error } = await (
+      row
+        ? supabase.from("peluang").update(values).eq("id", row.id)
+        : supabase.from("peluang").insert({ ...values, owner_id: user!.id, business_id: text("business_id") || null })
+    )
+      .select("status")
+      .single();
     setBusy(false);
     if (error) return setError("Peluang belum tersimpan. Periksa isiannya lalu coba lagi ya.");
+    const live = data.status === "approved";
     toast(
       !row
-        ? "Peluang terkirim. Tayang setelah ditinjau staf."
-        : row.status === "rejected" && isGraduate
+        ? live
+          ? "Peluang terkirim dan langsung tayang."
+          : "Peluang terkirim. Tayang setelah ditinjau staf."
+        : row.status === "rejected" && data.status === "pending"
           ? "Perubahan tersimpan dan dikirim lagi untuk ditinjau."
-          : row.status === "approved"
+          : live
             ? "Perubahan tersimpan dan langsung tayang."
             : "Perubahan tersimpan.",
     );

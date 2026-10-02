@@ -10,8 +10,8 @@ import { pesan, programLabels, tanggal, waLink } from "../../_lib/format";
 import { useQuery } from "../../_lib/hooks";
 import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
-import { Avatar, Badge, Button, Card, Chip, ConfirmSheet, Empty, Failed, SearchInput, Skeleton, Toggle, toast } from "../ui";
-import { NoteSheet, SectionTitle } from "./shared";
+import { Avatar, Badge, Button, Card, Chip, Empty, Failed, SearchInput, Skeleton, toast } from "../ui";
+import { AutoApprove, NoteSheet, SectionTitle } from "./shared";
 
 type Status = Enums<"verification_status">;
 type Member = {
@@ -35,13 +35,10 @@ const FILTERS: Status[] = ["pending", "approved", "rejected", "draft"];
 
 export function Verifikasi({ onChanged }: { onChanged: () => void }) {
   const users = useQuery(() => supabase.rpc("staff_users").overrideTypes<Member[], { merge: false }>(), []);
-  const settings = useQuery<{ auto_approve: boolean }>(() => supabase.from("settings").select("auto_approve").single(), []);
   const [status, setStatus] = useState<Status>("pending");
   const [q, setQ] = useState("");
   const [rejecting, setRejecting] = useState<Member | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  // The open "turn Auto Approve on?" question. It is called with the answer, which the switch is waiting for.
-  const [answer, setAnswer] = useState<((on: boolean) => void) | null>(null);
 
   const members = (users.data ?? []).filter((u) => u.role === "member");
   const waiting = members.filter((u) => u.verification === "pending").length;
@@ -60,42 +57,24 @@ export function Verifikasi({ onChanged }: { onChanged: () => void }) {
     onChanged();
   };
 
-  const setAuto = async (on: boolean) => {
-    const { error } = await supabase.rpc("set_auto_approve", { p_on: on });
-    if (error) throw new Error(pesan(error));
-    toast(on ? "Auto Approve menyala. Semua yang menunggu sudah disetujui." : "Auto Approve dimatikan.");
-    settings.reload();
-    users.reload();
-    onChanged();
-  };
-
   return (
     <section>
       <SectionTitle title="Verifikasi lulusan">Cocokkan nama dan angkatan dengan data pelatihan, lalu setujui atau tolak.</SectionTitle>
 
-      <div className="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-blush-line bg-blush p-4">
-        <div>
-          <p className="font-semibold text-maroon">Auto Approve Graduates Request</p>
-          <p className="mt-1 text-[13px] text-maroon/80">
-            Untuk demo. Selama menyala, setiap permintaan verifikasi lulusan langsung disetujui, termasuk yang sedang menunggu saat ini.
-          </p>
-        </div>
-        <Toggle
-          checked={!!settings.data?.auto_approve}
-          // On approves the whole waiting list, which cannot be taken back in one go: it asks first, and the switch waits
-          // for the answer. false puts the switch back.
-          onChange={(on) =>
-            on ? new Promise<boolean>((resolve) => setAnswer(() => resolve)) : setAuto(false).catch((e: Error) => (toast(e.message, "error"), false))
-          }
-          label="Auto Approve Graduates Request"
-          disabled={settings.loading || !settings.data} // not read yet, or the read failed: its position is unknown
-        />
-      </div>
-      {settings.error && (
-        <div className="mt-3">
-          <Failed query={settings} />
-        </div>
-      )}
+      <AutoApprove
+        setting="auto_approve"
+        title="Auto Approve Graduates Request"
+        onChanged={() => (users.reload(), onChanged())}
+        warning={
+          <>
+            {waiting > 0 && `${waiting} orang yang sedang menunggu langsung disetujui. `}
+            Selama menyala, setiap pendaftar baru juga langsung jadi lulusan terverifikasi, tanpa dicek nama dan angkatannya. Yang sudah disetujui hanya
+            bisa dicabut satu per satu.
+          </>
+        }
+      >
+        Untuk demo. Selama menyala, setiap permintaan verifikasi lulusan langsung disetujui, termasuk yang sedang menunggu saat ini.
+      </AutoApprove>
 
       <div className="no-scrollbar -mx-4 mt-2.5 -mb-1.5 flex gap-2 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:px-0">
         {FILTERS.map((s) => (
@@ -176,28 +155,6 @@ export function Verifikasi({ onChanged }: { onChanged: () => void }) {
           setRejecting(null);
         }}
       />
-
-      <ConfirmSheet
-        open={!!answer}
-        onClose={() => {
-          answer?.(false);
-          setAnswer(null);
-        }}
-        onConfirm={async () => {
-          const asked = answer;
-          await setAuto(true); // a failure shows inside the sheet, and the switch keeps waiting
-          asked?.(true);
-          // Only this question is over. The sheet can be closed while the request runs and the switch tapped again:
-          // that newer question keeps its own answer.
-          setAnswer((now: typeof answer) => (now === asked ? null : now));
-        }}
-        title="Nyalakan Auto Approve?"
-        confirmLabel="Nyalakan"
-      >
-        {waiting > 0 && `${waiting} orang yang sedang menunggu langsung disetujui. `}
-        Selama menyala, setiap pendaftar baru juga langsung jadi lulusan terverifikasi, tanpa dicek nama dan angkatannya. Yang sudah disetujui hanya bisa
-        dicabut satu per satu.
-      </ConfirmSheet>
     </section>
   );
 }

@@ -6,9 +6,10 @@ import { ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { REVIEW_LABELS } from "../../_lib/constants";
 import { pesan } from "../../_lib/format";
+import { useQuery } from "../../_lib/hooks";
 import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
-import { Button, Empty, Field, Sheet, Textarea, toast } from "../ui";
+import { Button, ConfirmSheet, Empty, Failed, Field, Sheet, Textarea, Toggle, toast } from "../ui";
 
 // staff_overview(): one number per queue or activity.
 export type Overview = Record<string, number>;
@@ -80,6 +81,76 @@ export function NoteSheet({
         </Button>
       </div>
     </Sheet>
+  );
+}
+
+// A demo switch: while it is on, the database approves by itself what would wait for staff, starting with whatever
+// is in the queue. That cannot be taken back in one go, so "on" asks first and the switch waits for the answer.
+export function AutoApprove({
+  setting,
+  title,
+  children,
+  warning,
+  onChanged,
+}: {
+  setting: "auto_approve" | "auto_approve_business" | "auto_approve_peluang";
+  title: string;
+  children: React.ReactNode;
+  warning: React.ReactNode;
+  onChanged: () => void;
+}) {
+  const settings = useQuery(() => supabase.from("settings").select("auto_approve, auto_approve_business, auto_approve_peluang").single(), []);
+  // The open "turn it on?" question. It is called with the answer, which the switch is waiting for.
+  const [answer, setAnswer] = useState<((on: boolean) => void) | null>(null);
+
+  const set = async (on: boolean) => {
+    const { error } = await supabase.rpc(`set_${setting}`, { p_on: on });
+    if (error) throw new Error(pesan(error));
+    toast(on ? `${title} menyala. Semua yang menunggu sudah disetujui.` : `${title} dimatikan.`);
+    settings.reload();
+    onChanged();
+  };
+
+  return (
+    <>
+      <div className="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-blush-line bg-blush p-4">
+        <div>
+          <p className="font-semibold text-maroon">{title}</p>
+          <p className="mt-1 text-[13px] text-maroon/80">{children}</p>
+        </div>
+        <Toggle
+          checked={!!settings.data?.[setting]}
+          // false puts the switch back.
+          onChange={(on) => (on ? new Promise<boolean>((resolve) => setAnswer(() => resolve)) : set(false).catch((e: Error) => (toast(e.message, "error"), false)))}
+          label={title}
+          disabled={settings.loading || !settings.data} // not read yet, or the read failed: its position is unknown
+        />
+      </div>
+      {settings.error && (
+        <div className="mt-3">
+          <Failed query={settings} />
+        </div>
+      )}
+      <ConfirmSheet
+        open={!!answer}
+        onClose={() => {
+          answer?.(false);
+          setAnswer(null);
+        }}
+        onConfirm={async () => {
+          const asked = answer;
+          await set(true); // a failure shows inside the sheet, and the switch keeps waiting
+          asked?.(true);
+          // Only this question is over. The sheet can be closed while the request runs and the switch tapped again:
+          // that newer question keeps its own answer.
+          setAnswer((now: typeof answer) => (now === asked ? null : now));
+        }}
+        title={`Nyalakan ${title}?`}
+        confirmLabel="Nyalakan"
+      >
+        {warning}
+      </ConfirmSheet>
+    </>
   );
 }
 

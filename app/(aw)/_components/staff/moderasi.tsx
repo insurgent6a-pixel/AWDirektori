@@ -13,7 +13,7 @@ import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
 import { Badge, Card, Chip, Failed, Media, Skeleton, toast, useKeepInView } from "../ui";
 import { LaporanQueue, PeluangQueue, PerkenalanQueue, PromoQueue } from "./moderasi-antrean";
-import { Decide, type Overview, type Person, personLabel, QueueEmpty, ReviewNote, SectionTitle, type Status, StatusFilter } from "./shared";
+import { AutoApprove, Decide, type Overview, type Person, personLabel, QueueEmpty, ReviewNote, SectionTitle, type Status, StatusFilter } from "./shared";
 
 const QUEUES = [
   ["bisnis", "Bisnis", "businesses_pending"],
@@ -96,6 +96,16 @@ function BisnisQueue({ onChanged }: { onChanged: () => void }) {
 
   return (
     <>
+      <div className="-mt-2 mb-3">
+        <AutoApprove
+          setting="auto_approve_business"
+          title="Auto Approve Bisnis"
+          onChanged={done}
+          warning="Semua bisnis yang sedang menunggu langsung tayang. Selama menyala, setiap bisnis baru yang dikirim lulusan terverifikasi juga langsung tayang tanpa ditinjau. Yang sudah tayang hanya bisa ditangguhkan satu per satu."
+        >
+          Untuk demo. Selama menyala, setiap bisnis yang dikirim lulusan terverifikasi langsung tayang, termasuk yang sedang menunggu saat ini.
+        </AutoApprove>
+      </div>
       <StatusFilter value={status} onChange={setStatus} />
       <Failed query={list} />
       <div className="space-y-3">

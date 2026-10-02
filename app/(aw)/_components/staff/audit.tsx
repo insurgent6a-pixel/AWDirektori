@@ -24,6 +24,12 @@ const ACTIONS: Record<string, string> = {
   "intro.accepted": "memperkenalkan",
   "intro.declined": "menutup perkenalan",
 };
+// The demo switches, by the action their flip is logged under.
+const SWITCHES: Record<string, string> = {
+  auto_approve: "Auto Approve Graduates Request",
+  auto_approve_business: "Auto Approve Bisnis",
+  auto_approve_peluang: "Auto Approve Peluang",
+};
 const TARGETS: Record<string, string> = {
   businesses: "bisnis",
   peluang: "peluang",
@@ -69,8 +75,10 @@ export function Audit({ limit = 100, title = "Log audit" }: { limit?: number; ti
               <div key={row.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <p className="min-w-0">
                   <b className="font-semibold">{row.action === "auto_approved" ? "Auto Approve" : (row.actor_name ?? "Akun terhapus")}</b>{" "}
-                  {row.action === "auto_approve" ? (
-                    <span className="text-ink-soft">{row.note === "on" ? "menyalakan" : "mematikan"} Auto Approve</span>
+                  {row.action in SWITCHES ? (
+                    <span className="text-ink-soft">
+                      {row.note === "on" ? "menyalakan" : "mematikan"} {SWITCHES[row.action]}
+                    </span>
                   ) : (
                     <>
                       <span className="text-ink-soft">

@@ -12,7 +12,7 @@ import { useQuery } from "../../_lib/hooks";
 import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
 import { Badge, Button, Card, Empty, Failed, Skeleton, toast } from "../ui";
-import { Decide, moderate, NoteSheet, type Person, personLabel, QueueEmpty, ReviewNote, type Status, StatusFilter } from "./shared";
+import { AutoApprove, Decide, moderate, NoteSheet, type Person, personLabel, QueueEmpty, ReviewNote, type Status, StatusFilter } from "./shared";
 
 type QueueProps = { onChanged: () => void };
 type Named = { id: string; name: string | null } | null;
@@ -58,6 +58,16 @@ export function PeluangQueue({ onChanged }: QueueProps) {
   const done = () => (list.reload(), onChanged());
   return (
     <>
+      <div className="-mt-2 mb-3">
+        <AutoApprove
+          setting="auto_approve_peluang"
+          title="Auto Approve Peluang"
+          onChanged={done}
+          warning="Semua Peluang yang sedang menunggu langsung tayang. Selama menyala, setiap Peluang baru dari lulusan terverifikasi juga langsung tayang tanpa ditinjau. Yang sudah tayang hanya bisa ditangguhkan satu per satu."
+        >
+          Untuk demo. Selama menyala, setiap Peluang dari lulusan terverifikasi langsung tayang, termasuk yang sedang menunggu saat ini.
+        </AutoApprove>
+      </div>
       <StatusFilter value={status} onChange={setStatus} />
       <Failed query={list} />
       {list.loading && !list.data ? (
