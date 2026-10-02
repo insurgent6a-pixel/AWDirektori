@@ -287,7 +287,8 @@ create table public.settings (
   id           boolean primary key default true check (id), -- single row
   auto_approve boolean not null default false,         -- graduates
   auto_approve_business boolean not null default false,
-  auto_approve_peluang boolean not null default false
+  auto_approve_peluang boolean not null default false,
+  auto_approve_promo boolean not null default false
 );
 insert into public.settings default values;
 
@@ -400,6 +401,23 @@ end $$;
 -- "z": triggers of one event run in name order, and this one must see what resubmit_on_edit put back in the queue.
 create trigger z_auto_approve before insert or update on public.peluang
   for each row execute function private.auto_approve_peluang();
+
+-- "Auto Approve Promo" (demo): the same for a promo. As with staff's approval, the perk still shows only while its
+-- business is public.
+create function private.auto_approve_promo() returns trigger
+language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.status = 'pending' and (select auto_approve_promo from settings) then
+    new.status := 'approved';
+    new.review_note := null;
+    if not is_staff() then
+      insert into audit_log (action, target_kind, target_id) values ('auto_approved', 'promos', new.id);
+    end if;
+  end if;
+  return new;
+end $$;
+create trigger z_auto_approve before insert or update on public.promos
+  for each row execute function private.auto_approve_promo();
 
 -- Owners agreed to the text they saw. Changing it asks them again.
 create function private.stories_reset_consent() returns trigger
@@ -543,7 +561,7 @@ create policy peluang_delete on public.peluang for delete to authenticated
 
 -- connections, contact_views, rsvps: written only through RPC.
 create policy connections_read on public.connections for select to authenticated
-  using ((select auth.uid()) in (from_id, to_id) or public.is_staff());
+  using ((select auth.uid()) in (from_id, to_id)); -- between the two members: staff do not see requests
 create policy contact_views_read on public.contact_views for select to authenticated
   using (public.owns_business(business_id) or public.is_staff());
 create policy rsvps_read on public.rsvps for select to authenticated
@@ -918,22 +936,17 @@ exception when unique_violation then -- connections_one_open
   raise exception 'Permintaanmu sebelumnya masih menunggu jawaban.';
 end $$;
 
--- The owner accepts, declines, or asks AsiaWorks for an introduction. Staff close introductions.
+-- The owner accepts or declines. It is between the two members: staff take no part (connections_read).
+-- (The status 'intro', an introduction through staff, is no longer given.)
 create function public.respond_connection(p_id uuid, p_action text) returns void
 language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   c  public.connections;
-  st public.connection_status := (case p_action when 'accept' then 'accepted' when 'decline' then 'declined'
-                                                when 'intro' then 'intro' end)::public.connection_status;
+  st public.connection_status := (case p_action when 'accept' then 'accepted' when 'decline' then 'declined' end)::public.connection_status;
 begin
   select * into c from connections where id = p_id for update;
   if not found or st is null then raise exception 'Permintaan tidak ditemukan.'; end if;
-  if c.to_id = auth.uid() and c.status in ('pending', 'intro') and (st <> 'accepted' or is_graduate()) then
-    null;
-  elsif is_staff() and c.status = 'intro' and st <> 'intro' then
-    insert into audit_log (actor_id, action, target_kind, target_id)
-    values (auth.uid(), 'intro.' || st, 'connections', p_id);
-  else
+  if not (c.to_id = auth.uid() and c.status in ('pending', 'intro') and (st <> 'accepted' or is_graduate())) then
     raise exception 'Permintaan ini tidak bisa diubah.' using errcode = '42501';
   end if;
   update connections set status = st, responded_at = now() where id = p_id;
@@ -1104,6 +1117,19 @@ begin
   values (auth.uid(), 'auto_approve_peluang', 'settings', case when p_on then 'on' else 'off' end);
 end $$;
 
+-- "Auto Approve Promo" (demo): approves every promo waiting, and every new one from then on (z_auto_approve).
+create function public.set_auto_approve_promo(p_on boolean) returns void
+language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not is_staff() then raise exception 'Khusus staf.' using errcode = '42501'; end if;
+  update settings set auto_approve_promo = p_on where id;
+  if p_on then -- the audit trigger logs each one as approved by the staff member who flipped the switch
+    update promos set status = 'approved', review_note = null where status = 'pending';
+  end if;
+  insert into audit_log (actor_id, action, target_kind, note)
+  values (auth.uid(), 'auto_approve_promo', 'settings', case when p_on then 'on' else 'off' end);
+end $$;
+
 -- Approve, reject, suspend or reinstate anything that is reviewed. The audit trigger records it.
 create function public.moderate(p_kind text, p_id uuid, p_action text, p_note text default null) returns void
 language plpgsql security definer set search_path = public, pg_temp as $$
@@ -1272,7 +1298,7 @@ declare f text;
 begin
   foreach f in array array['save_profile', 'my_phone', 'set_business_contact', 'submit_business', 'view_contact',
                            'promo_code', 'connect', 'respond_connection', 'my_connections', 'rsvp', 'cancel_rsvp',
-                           'story_consent', 'verify_graduate', 'set_auto_approve', 'set_auto_approve_business', 'set_auto_approve_peluang', 'moderate', 'staff_users',
+                           'story_consent', 'verify_graduate', 'set_auto_approve', 'set_auto_approve_business', 'set_auto_approve_peluang', 'set_auto_approve_promo', 'moderate', 'staff_users',
                            'staff_overview', 'audit_feed', 'export_user_data', 'delete_account'] loop
     execute format('revoke execute on function public.%I from public, anon', f);
     execute format('grant execute on function public.%I to authenticated, service_role', f);

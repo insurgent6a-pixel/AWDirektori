@@ -37,12 +37,24 @@ export function PromoSection({ businessId }: { businessId: string }) {
     };
     setBusy(true);
     setError(null);
-    const { error } = row
-      ? await supabase.from("promos").update(values).eq("id", row.id)
-      : await supabase.from("promos").insert({ ...values, business_id: businessId });
+    // The status comes back with the row: with staff's Auto Approve Promo on, the database approves it at once.
+    const { data, error } = await (row ? supabase.from("promos").update(values).eq("id", row.id) : supabase.from("promos").insert({ ...values, business_id: businessId }))
+      .select("status")
+      .single();
     setBusy(false);
     if (error) return setError("Promo belum tersimpan. Coba lagi ya.");
-    toast(!row ? "Promo terkirim. Tampil di kartu bisnis setelah ditinjau staf." : row.status === "rejected" ? "Promo diperbarui dan dikirim lagi untuk ditinjau." : "Promo diperbarui.");
+    const live = data.status === "approved";
+    toast(
+      !row
+        ? live
+          ? "Promo terkirim dan langsung tayang di kartu bisnis."
+          : "Promo terkirim. Tampil di kartu bisnis setelah ditinjau staf."
+        : row.status === "rejected"
+          ? live
+            ? "Promo diperbarui dan langsung tayang."
+            : "Promo diperbarui dan dikirim lagi untuk ditinjau."
+          : "Promo diperbarui.",
+    );
     promo.reload();
   };
   const setActive = async (active: boolean) => {

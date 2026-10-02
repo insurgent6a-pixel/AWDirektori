@@ -2,7 +2,7 @@
 
 // Staff console at /staff. Not signed in as staff: the same login form as /masuk, in staff mode.
 
-import { BookOpen, CalendarDays, LayoutGrid, LockKeyhole, LogOut, type LucideIcon, Megaphone, ScrollText, ShieldCheck, UserCheck } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,39 +15,20 @@ import { CeritaStaf } from "../_components/staff/cerita";
 import { Moderasi } from "../_components/staff/moderasi";
 import { Privasi } from "../_components/staff/privasi";
 import { Ringkasan } from "../_components/staff/ringkasan";
-import type { Overview } from "../_components/staff/shared";
+import { STAFF_BAR, STAFF_SECTIONS as SECTIONS, staffChanged, useStaffOverview } from "../_components/staff/shared";
 import { Verifikasi } from "../_components/staff/verifikasi";
-import { Button, Failed, Skeleton, useKeepInView } from "../_components/ui";
+import { Button, Card, Failed, Skeleton } from "../_components/ui";
 import { useAuth } from "../_lib/auth";
 import { cn } from "../_lib/format";
-import { useQuery } from "../_lib/hooks";
-import { supabase } from "../_lib/supabase";
-
-const SECTIONS: { key: string; label: string; icon: LucideIcon; queue?: (o: Overview) => number }[] = [
-  { key: "ringkasan", label: "Ringkasan", icon: LayoutGrid },
-  { key: "verifikasi", label: "Verifikasi", icon: UserCheck, queue: (o) => o.graduates_pending },
-  {
-    key: "moderasi",
-    label: "Moderasi",
-    icon: ShieldCheck,
-    queue: (o) => o.businesses_pending + o.peluang_pending + o.promos_pending + o.reports_open + o.intros,
-  },
-  { key: "acara", label: "Acara", icon: CalendarDays, queue: (o) => o.events_pending },
-  { key: "cerita", label: "Cerita", icon: BookOpen },
-  { key: "banner", label: "Banner", icon: Megaphone },
-  { key: "privasi", label: "Privasi", icon: LockKeyhole, queue: (o) => o.privacy_open },
-  { key: "audit", label: "Log audit", icon: ScrollText },
-];
 
 export default function StaffPage() {
   const { user, profile, isStaff, loading, failed, refresh, signOut } = useAuth();
   const params = useSearchParams();
   const section = SECTIONS.find((s) => s.key === params.get("tab")) ?? SECTIONS[0];
+  // Phones: the bottom bar holds the first sections, and "Lainnya" opens this menu of the rest.
+  const more = params.get("tab") === "lainnya";
   // Refetched on every section change, so the queue badges stay current.
-  const overview = useQuery<Overview>(
-    isStaff ? async () => supabase.rpc("staff_overview").then(({ data, error }) => ({ data: data as Overview | null, error })) : null,
-    [isStaff, section.key],
-  );
+  const overview = useStaffOverview(isStaff, section.key);
 
   // Only the first load shows the skeleton. After that, "loading" means someone is signing in through the form below,
   // and the form has to stay on screen to show its progress and, for a member's account, its refusal.
@@ -55,8 +36,6 @@ export default function StaffPage() {
   useEffect(() => {
     if (!loading) setReady(true);
   }, [loading]);
-  // Phones: the section strip scrolls sideways; keep the open section in view (again once the badges have loaded).
-  const strip = useKeepInView<HTMLUListElement>([section.key, overview.data, ready, isStaff]);
   if (!ready) {
     return (
       <Container className="py-10">
@@ -76,14 +55,14 @@ export default function StaffPage() {
 
   return (
     <Container className="py-5 md:py-8">
-      <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Staf", href: "/staff" }, { label: section.label }]} />
+      <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Staf", href: "/staff" }, { label: more ? "Lainnya" : section.label }]} />
 
-      {/* minmax(0, 1fr): the tab strip scrolls sideways on phones instead of stretching the whole page. */}
+      {/* Phones move between sections with the bottom bar (BottomBar in shell.tsx); the side list is for wider screens. */}
       <div className="mt-4 grid grid-cols-[minmax(0,1fr)] items-start gap-6 md:grid-cols-[13rem_minmax(0,1fr)]">
-        <nav aria-label="Konsol staf" className="min-w-0 md:sticky md:top-24">
-          <ul ref={strip} className="no-scrollbar -mx-4 -my-1.5 flex gap-1.5 overflow-x-auto px-4 py-1.5 md:mx-0 md:flex-col md:px-0">
+        <nav aria-label="Konsol staf" className="hidden min-w-0 md:sticky md:top-24 md:block">
+          <ul className="flex flex-col gap-1.5">
             {SECTIONS.map(({ key, label, icon: Icon, queue }) => {
-              const active = key === section.key;
+              const active = !more && key === section.key;
               const waiting = overview.data && queue ? queue(overview.data) : 0;
               return (
                 <li key={key} className="shrink-0">
@@ -92,7 +71,7 @@ export default function StaffPage() {
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "tap flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium whitespace-nowrap",
-                      active ? "bg-maroon text-white" : "bg-surface text-ink hover:bg-blush md:bg-transparent",
+                      active ? "bg-maroon text-white" : "text-ink hover:bg-blush",
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -107,33 +86,52 @@ export default function StaffPage() {
               );
             })}
           </ul>
-          <div className="mt-3 hidden md:block">
+          <div className="mt-3">
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4" /> Keluar
             </Button>
           </div>
         </nav>
 
-        <div key={section.key} className="rise min-w-0">
-          {overview.error && (
-            <div className="mb-4">
-              <Failed query={overview} />
+        {more ? (
+          <div className="rise min-w-0">
+            <h2 className="h-card text-xl">Lainnya</h2>
+            <Card className="mt-4 divide-y divide-line">
+              {SECTIONS.slice(STAFF_BAR).map(({ key, label, icon: Icon, queue }) => {
+                const waiting = overview.data && queue ? queue(overview.data) : 0;
+                return (
+                  <Link key={key} href={`/staff?tab=${key}`} className="tap-soft flex items-center gap-3 p-4 text-sm font-medium hover:bg-page">
+                    <Icon className="h-5 w-5 text-maroon" />
+                    {label}
+                    {waiting > 0 && <span className="rounded-full bg-maroon px-1.5 text-[11px] leading-5 font-semibold text-white">{waiting}</span>}
+                    <ChevronRight className="ml-auto h-4 w-4 text-ink-soft" />
+                  </Link>
+                );
+              })}
+            </Card>
+            <div className="mt-6">
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4" /> Keluar
+              </Button>
             </div>
-          )}
-          {section.key === "ringkasan" && !overview.error && <Ringkasan overview={overview.data} />}
-          {section.key === "verifikasi" && <Verifikasi onChanged={overview.reload} />}
-          {section.key === "moderasi" && <Moderasi overview={overview.data} onChanged={overview.reload} />}
-          {section.key === "acara" && <AcaraStaf onChanged={overview.reload} />}
-          {section.key === "cerita" && <CeritaStaf />}
-          {section.key === "banner" && <BannerStaf />}
-          {section.key === "privasi" && <Privasi onChanged={overview.reload} />}
-          {section.key === "audit" && <Audit />}
-          <div className="mt-8 md:hidden">
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4" /> Keluar
-            </Button>
           </div>
-        </div>
+        ) : (
+          <div key={section.key} className="rise min-w-0">
+            {overview.error && (
+              <div className="mb-4">
+                <Failed query={overview} />
+              </div>
+            )}
+            {section.key === "ringkasan" && !overview.error && <Ringkasan overview={overview.data} />}
+            {section.key === "verifikasi" && <Verifikasi onChanged={staffChanged} />}
+            {section.key === "moderasi" && <Moderasi overview={overview.data} onChanged={staffChanged} />}
+            {section.key === "acara" && <AcaraStaf onChanged={staffChanged} />}
+            {section.key === "cerita" && <CeritaStaf />}
+            {section.key === "banner" && <BannerStaf />}
+            {section.key === "privasi" && <Privasi onChanged={staffChanged} />}
+            {section.key === "audit" && <Audit />}
+          </div>
+        )}
       </div>
     </Container>
   );

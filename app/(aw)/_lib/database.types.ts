@@ -776,18 +776,21 @@ export type Database = {
           auto_approve: boolean
           auto_approve_business: boolean
           auto_approve_peluang: boolean
+          auto_approve_promo: boolean
           id: boolean
         }
         Insert: {
           auto_approve?: boolean
           auto_approve_business?: boolean
           auto_approve_peluang?: boolean
+          auto_approve_promo?: boolean
           id?: boolean
         }
         Update: {
           auto_approve?: boolean
           auto_approve_business?: boolean
           auto_approve_peluang?: boolean
+          auto_approve_promo?: boolean
           id?: boolean
         }
         Relationships: []
@@ -1091,6 +1094,7 @@ export type Database = {
       set_auto_approve: { Args: { p_on: boolean }; Returns: undefined }
       set_auto_approve_business: { Args: { p_on: boolean }; Returns: undefined }
       set_auto_approve_peluang: { Args: { p_on: boolean }; Returns: undefined }
+      set_auto_approve_promo: { Args: { p_on: boolean }; Returns: undefined }
       set_business_contact: {
         Args: { p_business: string; p_contact: string }
         Returns: undefined

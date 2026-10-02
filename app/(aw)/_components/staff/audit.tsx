@@ -29,6 +29,7 @@ const SWITCHES: Record<string, string> = {
   auto_approve: "Auto Approve Graduates Request",
   auto_approve_business: "Auto Approve Bisnis",
   auto_approve_peluang: "Auto Approve Peluang",
+  auto_approve_promo: "Auto Approve Promo",
 };
 const TARGETS: Record<string, string> = {
   businesses: "bisnis",

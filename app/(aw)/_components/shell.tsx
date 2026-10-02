@@ -8,6 +8,7 @@ import {
   ChevronRight,
   CircleUserRound,
   Compass,
+  Ellipsis,
   GraduationCap,
   Handshake,
   Link2,
@@ -20,6 +21,7 @@ import { useAuth } from "../_lib/auth";
 import { cn } from "../_lib/format";
 import { useQuery } from "../_lib/hooks";
 import { supabase } from "../_lib/supabase";
+import { STAFF_BAR, STAFF_SECTIONS, useStaffOverview } from "./staff/shared";
 import { Avatar, Button } from "./ui";
 
 type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number };
@@ -208,7 +210,8 @@ export function usePendingRequests(on = true) {
   return pending.data?.length;
 }
 
-// Mobile navigation lives at the bottom, within thumb reach. Inside the dashboard it switches to the dashboard's tabs.
+// Mobile navigation lives at the bottom, within thumb reach. Inside the dashboard it switches to the dashboard's tabs,
+// and inside the staff console to the console's sections (the first few, the rest under "Lainnya").
 // Sticky, not fixed: it is the last thing on the page, so it never covers the footer's last row.
 export function BottomBar() {
   const path = usePathname();
@@ -218,22 +221,32 @@ export function BottomBar() {
   // The last item: the way in for a visitor, and the way back to their own area for a member or for staff.
   const home = !user ? { href: "/masuk", label: "Masuk" } : isStaff ? { href: "/staff", label: "Konsol" } : { href: "/akun", label: "Dasbor" };
 
+  const inConsole = path.startsWith("/staff") && isStaff; // not the staff login form
   const pending = usePendingRequests(inDashboard);
+  const overview = useStaffOverview(inConsole, params.get("tab") ?? "").data;
   const [tapped, setTapped] = useState<string | null>(null); // the pill pops for a tap, not for every page load
 
-  if (isBare(path)) return null;
+  if (isBare(path) && !inConsole) return null;
 
   const tab = params.get("tab") ?? "peluang";
-  const items: (NavItem & { active: boolean })[] = inDashboard
-    ? DASHBOARD_NAV.map((item) => ({
-        ...item,
-        active: item.tab === tab,
-        badge: item.tab === "koneksi" ? pending : undefined,
-      }))
-    : [
-        ...NAV.map((item) => ({ ...item, active: isActive(path, item.href) })),
-        { ...home, icon: CircleUserRound, active: false },
-      ];
+  const waiting = (sections: typeof STAFF_SECTIONS) => (overview ? sections.reduce((n, s) => n + (s.queue?.(overview) ?? 0), 0) : 0);
+  const more = STAFF_SECTIONS.slice(STAFF_BAR);
+  const section = params.get("tab") === "lainnya" ? "lainnya" : (STAFF_SECTIONS.find((s) => s.key === params.get("tab")) ?? STAFF_SECTIONS[0]).key;
+  const items: (NavItem & { active: boolean })[] = inConsole
+    ? [
+        ...STAFF_SECTIONS.slice(0, STAFF_BAR).map((s) => ({ href: `/staff?tab=${s.key}`, label: s.label, icon: s.icon, active: s.key === section, badge: waiting([s]) })),
+        { href: "/staff?tab=lainnya", label: "Lainnya", icon: Ellipsis, active: section === "lainnya" || more.some((s) => s.key === section), badge: waiting(more) },
+      ]
+    : inDashboard
+      ? DASHBOARD_NAV.map((item) => ({
+          ...item,
+          active: item.tab === tab,
+          badge: item.tab === "koneksi" ? pending : undefined,
+        }))
+      : [
+          ...NAV.map((item) => ({ ...item, active: isActive(path, item.href) })),
+          { ...home, icon: CircleUserRound, active: false },
+        ];
 
   return (
     <nav
