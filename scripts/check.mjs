@@ -66,10 +66,11 @@ async function cleanup(tag, ids) {
   }
 }
 
-const { data: settings } = await admin.from('settings').select('auto_approve').single().throwOnError();
+const SWITCHES = { auto_approve: false, auto_approve_business: false, auto_approve_peluang: false };
+const { data: settings } = await admin.from('settings').select(Object.keys(SWITCHES).join()).single().throwOnError();
 
 try {
-  await admin.from('settings').update({ auto_approve: false }).eq('id', true).throwOnError(); // start from the normal flow
+  await admin.from('settings').update(SWITCHES).eq('id', true).throwOnError(); // start from the normal flow
   for (const n of Object.keys(people)) {
     email[n] = `check-${run}-${n}@check.awdirektori.test`;
     phone[n] = `0811-${run}-${n}`;
@@ -334,6 +335,59 @@ try {
       if (Object.keys(patch).length) await budi.from('peluang').update(patch).eq('id', need).throwOnError();
       assert.equal((await anon.from('peluang_feed').select('id').in('id', [need, job]).throwOnError()).data.length, shown, JSON.stringify(patch));
     }
+  });
+
+  await step('5 auto approve for listings and Peluang: staff only; on approves the queue and whatever is sent next, a corrected Peluang included; off restores review', async () => {
+    const listing = async () => { // an online-only listing of Ana's, ready to send
+      const { data } = await ana.from('businesses')
+        .insert({ owner_id: id.ana, name: `Auto ${run}`, description: 'Demo', category: 'Lainnya', links: ['https://example.com/auto'], online_only: true })
+        .select().single().throwOnError();
+      await ana.rpc('set_business_contact', { p_business: data.id, p_contact: 'wa.me/auto' }).throwOnError();
+      return data.id;
+    };
+    const ask = async () => (await budi.from('peluang').insert({ owner_id: id.budi, kind: 'vendor', title: `Auto ${run}`, description: 'Demo' }).select('id, status').single().throwOnError()).data;
+    const statusOf = async (table, row) => (await admin.from(table).select('status').eq('id', row).single().throwOnError()).data.status;
+    const fns = ['set_auto_approve_business', 'set_auto_approve_peluang'];
+    for (const fn of fns) assert.equal((await ana.rpc(fn, { p_on: true })).error?.code, DENIED, fn);
+    assert.equal((await ana.from('settings').update({ auto_approve_peluang: true }).eq('id', true)).error?.code, DENIED);
+
+    const [queuedB, nextB] = [await listing(), await listing()];
+    await ana.rpc('submit_business', { p_business: queuedB }).throwOnError();
+    const queuedP = await ask();
+    assert.deepEqual([await statusOf('businesses', queuedB), queuedP.status], ['pending', 'pending']);
+    const mine = [queuedB, nextB, queuedP.id];
+    // "on" approves everything waiting, the seed's rows included: note them and put them straight back
+    const others = {};
+    for (const table of ['businesses', 'peluang'])
+      others[table] = (await admin.from(table).select('id').eq('status', 'pending').throwOnError()).data.map((r) => r.id).filter((r) => !mine.includes(r));
+    try {
+      for (const fn of fns) await staff.rpc(fn, { p_on: true }).throwOnError();
+      assert.deepEqual([await statusOf('businesses', queuedB), await statusOf('peluang', queuedP.id)], ['approved', 'approved']);
+      await ana.rpc('submit_business', { p_business: nextB }).throwOnError();
+      const nextP = await ask();
+      mine.push(nextP.id);
+      assert.deepEqual([await statusOf('businesses', nextB), nextP.status], ['approved', 'approved']);
+      assert.equal((await anon.rpc('search_businesses', { p_ids: [nextB] }).throwOnError()).data.length, 1);
+      assert.equal((await anon.from('peluang_feed').select('id').eq('id', nextP.id).throwOnError()).data.length, 1);
+      await staff.rpc('moderate', { p_kind: 'peluang', p_id: nextP.id, p_action: 'reject', p_note: 'Kurang jelas' }).throwOnError();
+      await budi.from('peluang').update({ description: 'Demo, lebih jelas' }).eq('id', nextP.id).throwOnError();
+      assert.equal(await statusOf('peluang', nextP.id), 'approved');
+      // the log: the queue under the staff member who flipped the switch, what came after under nobody
+      const { data: log } = await staff.from('audit_log').select('action, target_id, actor_id').in('target_id', mine).in('action', ['approved', 'auto_approved']).throwOnError();
+      assert.deepEqual([...new Set(log.map((r) => `${r.action} ${r.target_id} by ${r.actor_id}`))].sort(), [
+        `approved ${queuedB} by ${id.staff}`, `approved ${queuedP.id} by ${id.staff}`,
+        `auto_approved ${nextB} by null`, `auto_approved ${nextP.id} by null`,
+      ].sort());
+    } finally {
+      for (const fn of fns) await staff.rpc(fn, { p_on: false });
+      for (const [table, rows] of Object.entries(others)) if (rows.length) await admin.from(table).update({ status: 'pending' }).in('id', rows);
+    }
+    const later = await ask();
+    assert.equal(later.status, 'pending');
+    // leave nothing for the later steps to count
+    await admin.from('peluang').delete().in('id', [...mine, later.id]).throwOnError();
+    await admin.from('businesses').delete().in('id', mine).throwOnError();
+    await admin.from('audit_log').delete().in('target_id', mine).throwOnError();
   });
 
   await step('12 Hubungkan: graduates only; contact details open to both sides on acceptance, not before; decline; intro via staff', async () => {
@@ -681,7 +735,7 @@ try {
   const ids = Object.values(id);
   if (files.length) await admin.storage.from('media').remove(files);
   await cleanup(run, ids);
-  await admin.from('settings').update({ auto_approve: settings.auto_approve }).eq('id', true);
+  await admin.from('settings').update(settings).eq('id', true);
   const { count } = await admin.from('profiles').select('*', { count: 'exact', head: true }).in('id', ids);
   if (count) { failed++; console.log(`✗ cleanup left ${count} of its users behind`); }
 }

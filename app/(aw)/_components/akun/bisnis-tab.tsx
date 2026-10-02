@@ -263,7 +263,9 @@ function PublishCard({ business, onChanged }: { business: Biz; onChanged: () => 
     const { error } = await supabase.rpc("submit_business", { p_business: business.id });
     setBusy(false);
     if (error) return setError(pesan(error));
-    toast("Terkirim. Bisnismu tayang setelah disetujui staf.");
+    // With staff's Auto Approve Bisnis on, the database approves it at once.
+    const { data } = await supabase.from("businesses").select("status").eq("id", business.id).single();
+    toast(data?.status === "approved" ? "Terkirim. Bisnismu langsung tayang." : "Terkirim. Bisnismu tayang setelah disetujui staf.");
     onChanged();
   };
 
