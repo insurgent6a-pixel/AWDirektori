@@ -248,7 +248,7 @@ function StepDiri({ profile, onDone }: { profile: Profile | null; onDone: () => 
       <Field label="Nama panggilan" hint="Nama ini yang tampil di kartu bisnismu.">
         <Input value={nickname} onChange={(e) => setNickname(e.target.value)} required autoComplete="nickname" />
       </Field>
-      <Field label="No HP (WhatsApp) pribadi" hint="Disimpan terenkripsi. Baru terlihat oleh lulusan lain setelah kamu menerima permintaan Hubungkan-nya.">
+      <Field label="No HP (WhatsApp) pribadi" hint="Disimpan terenkripsi. Lulusan lain baru bisa melihatnya setelah kamu menerima permintaan Hubungkan dari mereka.">
         <Input value={phone} onChange={(e) => setPhone(e.target.value)} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0812 3456 7890" />
       </Field>
       {/* Three boxes to choose from. Each one chosen brings up its batch number: a must for LP, optional for IB and IA. */}
@@ -266,7 +266,7 @@ function StepDiri({ profile, onDone }: { profile: Profile | null; onDone: () => 
                 onClick={() => setPicked(PROGRAMS.filter((x) => (x === p ? !on : picked.includes(x))))}
                 className={cn(
                   "tap relative grid h-16 place-items-center rounded-2xl border text-lg font-semibold",
-                  on ? "border-maroon bg-blush text-maroon shadow-card" : "border-line bg-surface hover:border-maroon/40 active:bg-page",
+                  on ? "border-maroon bg-blush text-maroon shadow-card hover:bg-blush-line" : "border-line bg-surface hover:border-maroon/40 active:bg-page",
                 )}
               >
                 {p}

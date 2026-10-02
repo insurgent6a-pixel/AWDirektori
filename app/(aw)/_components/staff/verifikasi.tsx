@@ -126,7 +126,7 @@ export function Verifikasi({ onChanged }: { onChanged: () => void }) {
                     <Badge tone={TONES[u.verification]}>{VERIFICATION_LABELS[u.verification]}</Badge>
                   </p>
                   <p className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
-                    {/* what the person chose on the form: LP always comes with its number, IB and IA may come without */}
+                    {/* what the person chose on the form: IB and IA may come without a number; LP only on a profile that was sent back and saved half-filled */}
                     {u.programs.length === 0 && <Badge tone="gray">Program belum dipilih</Badge>}
                     {programLabels(u).map((label) => (
                       <Badge key={label} tone={label.startsWith("LP") ? "maroon" : "gray"}>
