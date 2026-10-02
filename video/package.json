@@ -3,11 +3,12 @@
   "private": true,
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts Showcase out/aw-direktori.mp4 --concurrency=1"
+    "render": "node make-audio.mjs && remotion render src/index.ts Showcase out/aw-direktori.mp4 --concurrency=1"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.532",
     "@remotion/google-fonts": "4.0.532",
+    "@remotion/media": "4.0.532",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "remotion": "^4.0.532"
