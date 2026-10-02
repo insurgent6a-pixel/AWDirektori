@@ -22,6 +22,7 @@ export type Story = NonNull<
   "id" | "title" | "body" | "created_at" | "business_a" | "name_a" | "business_b" | "name_b"
 >;
 export type Banner = NonNull<Views<"banner_feed">, "id" | "title" | "created_at">;
+export type Graduate = NonNull<Views<"graduate_feed">, "id" | "full_name" | "programs">;
 
 export type Loc = {
   id: string;

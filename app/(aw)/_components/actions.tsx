@@ -16,9 +16,9 @@ import { Button, Failed, IconButton, Notice, Sheet, Spinner, Textarea, toast } f
 type ButtonLook = { size?: "sm" | "md" | "lg"; variant?: "primary" | "secondary" | "ghost"; full?: boolean; className?: string };
 
 // Shown inside a sheet when the visitor still has to sign in or wait for verification.
-// `staff` lets staff through as well: they may read contacts and promo codes, but the database keeps Hubungkan and
-// RSVP for graduates.
-export function Gate({ children, staff }: { children: React.ReactNode; staff?: boolean }) {
+// `staff` lets staff through as well: they may read contacts and promo codes, but the database keeps RSVP for
+// graduates. `member` lets every signed-in member through, verified or not (Hubungkan); staff stay out.
+export function Gate({ children, staff, member }: { children: React.ReactNode; staff?: boolean; member?: boolean }) {
   const { user, profile, loading, failed, refresh, isGraduate, isStaff } = useAuth();
   const path = usePathname();
   // The session is still loading: do not tell a signed-in member to sign in.
@@ -32,7 +32,9 @@ export function Gate({ children, staff }: { children: React.ReactNode; staff?: b
   if (!user) {
     return (
       <div className="pb-1">
-        <p className="body-copy text-sm">Fitur ini khusus lulusan AsiaWorks. Masuk dulu ya, atau daftar kalau belum punya akun.</p>
+        <p className="body-copy text-sm">
+          {member ? "Masuk dulu ya, supaya pemiliknya tahu siapa yang menyapa. Belum punya akun? Daftar dulu." : "Fitur ini khusus lulusan AsiaWorks. Masuk dulu ya, atau daftar kalau belum punya akun."}
+        </p>
         <div className="mt-5 grid grid-cols-2 gap-3">
           <Button variant="secondary" href={`/daftar`}>
             Daftar
@@ -43,8 +45,10 @@ export function Gate({ children, staff }: { children: React.ReactNode; staff?: b
     );
   }
   if (failed && !profile) return <Failed query={{ error: "profile", reload: refresh }} />;
-  if (isStaff && !staff) return <Notice tone="amber">Fitur ini untuk lulusan terverifikasi. Akun staf tidak ikut di sini.</Notice>;
-  if (!isGraduate && !isStaff) {
+  if (isStaff && !staff) {
+    return <Notice tone="amber">Fitur ini untuk {member ? "akun anggota" : "lulusan terverifikasi"}. Akun staf tidak ikut di sini.</Notice>;
+  }
+  if (!isGraduate && !isStaff && !member) {
     const waiting = profile?.verification === "pending";
     return (
       <div className="pb-1">
@@ -119,7 +123,7 @@ export function ConnectButton({
         {mine ? "Milikmu" : label}
       </Button>
       <Sheet open={open} onClose={() => setOpen(false)} title={`Hubungkan dengan ${targetName ?? "lulusan ini"}`}>
-        <Gate>
+        <Gate member>
           <p className="body-copy text-sm">
             Ceritakan singkat apa yang kamu cari. Kalau diterima, kontak kalian berdua saling terbuka.
           </p>

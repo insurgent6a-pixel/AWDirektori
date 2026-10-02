@@ -141,7 +141,11 @@ The browser only holds the anon key, so these rules live in the SQL file, not in
   listing, a Peluang or a hosted event while its owner is not a verified graduate. For a demo, staff can switch on
   "Auto Approve Bisnis", "Auto Approve Peluang" and "Auto Approve Promo" (Moderasi): what is sent then goes live
   at once, and the audit log says so.
-- **Hubungkan is between two members**. The owner accepts or declines; staff take no part and cannot read requests.
+- **Hubungkan is between two members**. Any signed-in member may send a request, verified as a graduate or not. The
+  owner accepts or declines; staff take no part and cannot read requests.
+- **The person behind a listing is public**. Tapping an owner's name opens "Profil lulusan" for anyone: full name,
+  nickname, programs and batch numbers, read from `graduate_feed`. That view only holds verified graduates who have a
+  live business or an open Peluang, so signing up alone puts nobody on the site.
 - **Banners are staff's**. Members cannot add, change or remove one. An ad is a banner staff tied to a business: it
   carries the label "Iklan", opens that business's page unless it has a link of its own, and is off the home page
   while the business is not public.
@@ -152,7 +156,7 @@ The browser only holds the anon key, so these rules live in the SQL file, not in
   numbers lock once the request is in (`save_profile`).
 - **Contacts are private**. The phone number and the business contact are stored encrypted (pgcrypto, key in
   Supabase Vault) in a schema the API cannot reach. A graduate gets a business contact through "Lihat kontak", which
-  records who looked, or through an accepted Hubungkan request, which opens both sides' contacts. The email address
+  records who looked. An accepted Hubungkan request opens both sides' contacts, also to a member who is not verified. The email address
   is the login: it is held by Supabase Auth in `auth.users`, not encrypted by this app, and reaches another member
   only on an accepted Hubungkan request.
 - **Location can be approximate**. In `area` mode the database rounds the point to about 1 km before storing it.

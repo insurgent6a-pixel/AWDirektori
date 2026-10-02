@@ -394,9 +394,12 @@ try {
     await admin.from('audit_log').delete().in('target_id', mine).throwOnError();
   });
 
-  await step('12 Hubungkan: graduates only; contact details open to both sides on acceptance, not before; decline; staff take no part and see no request', async () => {
+  await step('12 Hubungkan: any signed-in member, verified or not; contact details open to both sides on acceptance, not before; decline; staff take no part and see no request', async () => {
     const hi = { p_message: 'Halo, saya ingin pesan kopi untuk acara kantor.', p_business: kopi };
-    assert.equal((await dodi.rpc('connect', hi)).error?.code, DENIED);
+    const { data: unverified } = await dodi.rpc('connect', hi).throwOnError(); // dodi was never verified
+    assert.equal((await ana.rpc('my_connections').throwOnError()).data.find((r) => r.id === unverified)?.other_id, id.dodi);
+    await admin.from('connections').delete().eq('id', unverified).throwOnError(); // out of the way of the counts below
+    assert.equal((await staff.rpc('connect', hi)).error?.code, DENIED);
     assert.match((await ana.rpc('connect', hi)).error?.message, /milikmu/);
     assert.match((await budi.rpc('connect', { ...hi, p_message: 'Halo kak' })).error?.message, /minimal 10/);
     const { data: req } = await budi.rpc('connect', hi).throwOnError();
@@ -597,8 +600,11 @@ try {
     }
   });
 
-  await step('1 anonymous: search works; base tables and member/staff RPC are closed (an unverified member sees only their own rows)', async () => {
+  await step('1 anonymous: search and the person behind a listing work; base tables and member/staff RPC are closed (an unverified member sees only their own rows)', async () => {
     assert.equal((await anon.rpc('search_businesses', { p_q: 'kop', p_ids: [kopi] }).throwOnError()).data.length, 1);
+    // "Profil lulusan": the person behind a live listing is public, an unverified member is not
+    const { data: persons } = await anon.from('graduate_feed').select('id').in('id', [id.ana, id.dodi]).throwOnError();
+    assert.deepEqual(persons.map((r) => r.id), [id.ana]);
     for (const t of TABLES) { // all but payments have rows by now
       const { data, error } = await anon.from(t).select().limit(1);
       assert(error ? error.code === DENIED : data.length === 0, t);

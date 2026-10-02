@@ -681,9 +681,18 @@ from public.banners n
 left join public.businesses b on b.id = n.business_id
 where n.active and (n.business_id is null or b.visible);
 
-revoke all on public.peluang_feed, public.event_feed, public.story_feed, public.banner_feed from anon, authenticated;
+-- The person behind a public listing or Peluang, for the "Profil lulusan" popup. Only verified graduates who already
+-- show something on the site: signing up, or being verified, alone puts nobody here.
+create view public.graduate_feed as
+select p.id, p.full_name, p.nickname, p.programs, p.batch_lp, p.batch_ib, p.batch_ia
+from public.profiles p
+where p.verification = 'approved'
+  and (exists (select 1 from public.businesses b where b.owner_id = p.id and b.visible)
+       or exists (select 1 from public.peluang_feed f where f.owner_id = p.id));
+
+revoke all on public.peluang_feed, public.event_feed, public.story_feed, public.banner_feed, public.graduate_feed from anon, authenticated;
 -- service_role is named too: new hosted projects no longer grant anything on public objects by default.
-grant select on public.peluang_feed, public.event_feed, public.story_feed, public.banner_feed to anon, authenticated, service_role;
+grant select on public.peluang_feed, public.event_feed, public.story_feed, public.banner_feed, public.graduate_feed to anon, authenticated, service_role;
 
 -- Directory search: keyword (full-text, prefix), industry, area, city, service type, promo and distance (PostGIS).
 -- Also serves the business page and saved lists through p_ids.
@@ -915,8 +924,9 @@ declare
   v_business uuid := p_business;
   v_id       uuid;
 begin
-  if not is_graduate() then
-    raise exception 'Hubungkan khusus lulusan terverifikasi.' using errcode = '42501';
+  -- Any signed-in member may ask, verified or not: the owner sees who is asking and decides. Staff take no part.
+  if auth.uid() is null or is_staff() then
+    raise exception 'Hubungkan hanya untuk akun anggota.' using errcode = '42501';
   end if;
   if length(trim(coalesce(p_message, ''))) < 10 then
     raise exception 'Ceritakan singkat apa yang kamu cari (minimal 10 karakter).';

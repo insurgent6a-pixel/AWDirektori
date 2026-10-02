@@ -11,8 +11,8 @@ import { batchLabel, bulanPendek, cn, hari, jam, jarak, programLabels, sisaHari,
 import { useQuery } from "../_lib/hooks";
 import { peluangFeed, searchBusinesses } from "../_lib/queries";
 import { supabase } from "../_lib/supabase";
-import type { Business, EventItem, Peluang, Profile, Story } from "../_lib/types";
-import { ConnectButton, Gate, ReportButton, RsvpButton, SaveButton } from "./actions";
+import type { Business, EventItem, Graduate, Peluang, Story } from "../_lib/types";
+import { ConnectButton, ReportButton, RsvpButton, SaveButton } from "./actions";
 import { Avatar, Badge, Button, Failed, Media, Sheet, Skeleton } from "./ui";
 
 // Entrance delay for item n of a list, capped so a long list does not keep its last cards waiting.
@@ -66,11 +66,12 @@ export function BusinessCard({ business, index }: { business: Business; index?: 
             {business.name}
           </Link>
         </h3>
-        <p className="mt-1 flex items-center gap-1.5 text-[13px]">
+        {/* a div, not a p: the name carries its sheet, and a dialog cannot sit inside a paragraph */}
+        <div className="mt-1 flex items-center gap-1.5 text-[13px]">
           <OwnerName id={business.owner_id} name={business.owner_name} businessId={business.id} className="text-maroon" />
           <BadgeCheck className="h-4 w-4 text-maroon" aria-label="Lulusan terverifikasi" />
           {business.service_type && <span className="text-ink-soft">· {SERVICE_TYPES[business.service_type]}</span>}
-        </p>
+        </div>
         <p className="body-copy mt-2 line-clamp-3 text-[13px]">{business.description}</p>
         {business.perk && <PerkNote perk={business.perk} className="mt-3" />}
         <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
@@ -161,9 +162,7 @@ export function OwnerName({
         {name}
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Profil lulusan">
-        <Gate staff>
-          <OwnerProfile id={id} name={name} businessId={businessId} peluangId={peluangId} onLeave={() => setOpen(false)} />
-        </Gate>
+        <OwnerProfile id={id} name={name} businessId={businessId} peluangId={peluangId} onLeave={() => setOpen(false)} />
       </Sheet>
     </>
   );
@@ -183,8 +182,9 @@ function OwnerProfile({
   onLeave: () => void;
 }) {
   const { isStaff } = useAuth();
-  const person = useQuery<Pick<Profile, "full_name" | "nickname" | "programs" | "batch_lp" | "batch_ib" | "batch_ia">>(
-    () => supabase.from("profiles").select("full_name, nickname, programs, batch_lp, batch_ib, batch_ia").eq("id", id).maybeSingle(),
+  // graduate_feed is public and only holds people who already show a business or a Peluang.
+  const person = useQuery<Graduate>(
+    () => supabase.from("graduate_feed").select("*").eq("id", id).maybeSingle().overrideTypes<Graduate, { merge: false }>(),
     [id],
   );
   // ponytail: the whole directory (one page of 200) filtered here. Give search_businesses an owner filter beyond that.
@@ -276,11 +276,11 @@ export function PeluangCard({ peluang, index }: { peluang: Peluang; index?: numb
       <div className="mt-3 flex items-center gap-3 rounded-xl bg-page p-2.5">
         <Avatar name={peluang.owner_name} />
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-sm font-semibold">
+          <div className="flex items-center gap-1.5 text-sm font-semibold">
             <OwnerName id={peluang.owner_id} name={peluang.owner_name} peluangId={peluang.id} className="truncate hover:text-maroon" />
             {peluang.batch_lp && <Badge>LP {peluang.batch_lp}</Badge>}
             <BadgeCheck className="h-4 w-4 shrink-0 text-maroon" aria-label="Lulusan terverifikasi" />
-          </p>
+          </div>
           {peluang.business_id && peluang.business_name && (
             <Link href={`/bisnis/${peluang.business_id}`} className="tap-soft -my-2.5 block truncate py-2.5 text-[12px] text-ink-soft hover:text-maroon">
               {peluang.business_name}
