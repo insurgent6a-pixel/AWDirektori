@@ -8,8 +8,8 @@ server code of our own: every permission is enforced inside Postgres, so the app
 
 | Route | What it is |
 |---|---|
-| `/direktori` | Home: banner, shortcuts, search with map and list, browse by industry or city, latest Peluang, perks, events |
-| `/direktori/[id]` | A business page |
+| `/` | Home: banner, shortcuts, search with map and list, browse by industry or city, latest Peluang, perks, events |
+| `/bisnis/[id]` | A business page |
 | `/peluang` | Partner requests posted by graduates |
 | `/acara` | Events with RSVP, collaboration stories, "offer to host" |
 | `/lulusan` | Meet Graduates: every live business as a card |
@@ -100,8 +100,9 @@ Things to know when merging:
   only desktop links to the four pages, Masuk and Dasbor, so add those links to the site's own header.
 - If a route name such as `/acara` is taken, rename that folder inside `app/(aw)`, then search `app/(aw)` for the old
   path and replace it. The paths are written out in the links of about twenty files, not in one place.
-- `app/page.tsx` (the redirect to `/direktori`) and `app/not-found.tsx` belong to this demo project, not to the
-  folder. A host site keeps its own.
+- The directory's home is `app/(aw)/page.tsx`, at `/`. A site with its own home page moves that file into a folder
+  (say `app/(aw)/direktori/`) and replaces the `"/"` links in `app/(aw)` with the new path.
+- `app/not-found.tsx` belongs to this demo project, not to the folder. A host site keeps its own.
 - A React site that is not on Next.js needs more than a copy. The routes are App Router folders (`page.tsx`,
   `layout.tsx`, `[id]`), about twenty files import `next/link`, `next/navigation` or `next/font`, and the Supabase keys
   are read from `process.env.NEXT_PUBLIC_*`. The components themselves are plain client components, so the work is
@@ -116,7 +117,8 @@ app/(aw)/
   _components/          ui kit, site chrome, map, cards, member actions, login form
   _components/akun/     dashboard tabs
   _components/staff/    staff console sections
-  direktori/ peluang/ acara/ lulusan/ daftar/ masuk/ akun/ staff/   one page.tsx each
+  page.tsx              the home page
+  bisnis/[id]/ peluang/ acara/ lulusan/ daftar/ masuk/ akun/ staff/   one page.tsx each
 supabase/
   migrations/20261001000000_init.sql   the whole database: tables, RLS, grants, feeds, RPC, storage rules
   local/                               Docker Compose for a local Supabase

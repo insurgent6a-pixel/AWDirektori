@@ -86,7 +86,7 @@ export function AkunTab() {
               onClick={async () => {
                 await signOut();
                 // A full navigation: the dashboard's own "not signed in" guard would otherwise send them to the login page.
-                window.location.assign("/direktori");
+                window.location.assign("/");
               }}
             >
               <LogOut className="h-4 w-4" /> Keluar

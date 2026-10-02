@@ -56,7 +56,7 @@ export default function DaftarPage() {
   return (
     <div className="wash min-h-[calc(100dvh-4rem-1px-env(safe-area-inset-top,0px))]">
       <Container className="max-w-xl py-6 md:py-10">
-        <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: "Daftar" }]} />
+        <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Daftar" }]} />
         <h1 className="h-section mt-5">Data Bisnis Lulusan AsiaWorks</h1>
         <p className="body-copy mt-2 text-sm">
           Halo Graduates! Punya bisnis? Punya jasa? Punya produk keren? Yuk berkumpul di platform digital komunitas AsiaWorks.
@@ -455,7 +455,7 @@ function Selesai({ approved, madeBusiness, returning }: { approved: boolean; mad
             Buka dasbor
           </Button>
         ) : (
-          <Button href="/direktori" variant="secondary" size="lg">
+          <Button href="/" variant="secondary" size="lg">
             Jelajahi direktori
           </Button>
         )}

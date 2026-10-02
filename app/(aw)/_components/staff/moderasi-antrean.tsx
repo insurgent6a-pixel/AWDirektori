@@ -197,7 +197,7 @@ export function LaporanQueue({ onChanged }: QueueProps) {
             <p className="text-[13px] text-ink-soft">
               {personLabel(r.reporter)} melaporkan{" "}
               {r.business ? (
-                <Link href={`/direktori/${r.business.id}`} className="tap -my-2.5 inline-block py-2.5 font-semibold text-maroon hover:underline">
+                <Link href={`/bisnis/${r.business.id}`} className="tap -my-2.5 inline-block py-2.5 font-semibold text-maroon hover:underline">
                   {r.business.name || "bisnis tanpa nama"}
                 </Link>
               ) : (

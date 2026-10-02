@@ -107,7 +107,7 @@ export function LoginForm({ staff = false }: { staff?: boolean }) {
   return (
     <div className="wash min-h-[calc(100dvh-4rem-1px-env(safe-area-inset-top,0px))] px-4 py-6 md:py-10">
       <div className="mx-auto w-full max-w-md">
-        <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: staff ? "Masuk staf" : "Masuk" }]} />
+        <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: staff ? "Masuk staf" : "Masuk" }]} />
       </div>
       <Card raised className="rise mx-auto mt-6 w-full max-w-md p-6 sm:p-8 md:mt-12">
         {staff && (

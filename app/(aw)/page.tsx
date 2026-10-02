@@ -28,16 +28,16 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BusinessRow, EventCard, PeluangCard } from "../_components/cards";
-import MapView from "../_components/map";
-import { Breadcrumbs, Container, usePasangBisnis } from "../_components/shell";
-import { Badge, Button, Card, Chip, Failed, IconButton, Media, Select, Sheet, Skeleton, Tabs, toast } from "../_components/ui";
-import { useAuth } from "../_lib/auth";
-import { AREAS, areaMatches, CATEGORIES, LUAR_JABODETABEK, SERVICE_TYPES } from "../_lib/constants";
-import { cn, scrollBehavior } from "../_lib/format";
-import { useQuery, useUrlFilters } from "../_lib/hooks";
-import { bannerFeed, eventFeed, myRsvps, peluangFeed, searchBusinesses } from "../_lib/queries";
-import type { Banner, Business, Enums } from "../_lib/types";
+import { BusinessRow, EventCard, PeluangCard } from "./_components/cards";
+import MapView from "./_components/map";
+import { Breadcrumbs, Container, usePasangBisnis } from "./_components/shell";
+import { Badge, Button, Card, Chip, Failed, IconButton, Media, Select, Sheet, Skeleton, Tabs, toast } from "./_components/ui";
+import { useAuth } from "./_lib/auth";
+import { AREAS, areaMatches, CATEGORIES, LUAR_JABODETABEK, SERVICE_TYPES } from "./_lib/constants";
+import { cn, scrollBehavior } from "./_lib/format";
+import { useQuery, useUrlFilters } from "./_lib/hooks";
+import { bannerFeed, eventFeed, myRsvps, peluangFeed, searchBusinesses } from "./_lib/queries";
+import type { Banner, Business, Enums } from "./_lib/types";
 
 const SHORTCUTS: { href: string; label: string; icon: LucideIcon; gold?: boolean }[] = [
   { href: "#jelajah", label: "Jelajahi bisnis", icon: Store },
@@ -72,7 +72,7 @@ export default function DirektoriPage() {
   const pasangBisnis = usePasangBisnis();
 
   // Filters live in the URL, so a search can be shared and the back button works. Only the typing is local.
-  const { params, setFilter, q, setQ, term } = useUrlFilters("/direktori");
+  const { params, setFilter, q, setQ, term } = useUrlFilters("/");
   const category = params.get("kategori") ?? "";
   const area = params.get("area") ?? "";
   const city = params.get("kota") ?? "";
@@ -134,7 +134,7 @@ export default function DirektoriPage() {
           lng: l.lng,
           title: b.name,
           subtitle: `${b.category} · ${l.city}`,
-          href: `/direktori/${b.id}`,
+          href: `/bisnis/${b.id}`,
           approximate: l.mode === "area",
         })),
       ),
@@ -166,7 +166,7 @@ export default function DirektoriPage() {
   const reset = () => {
     setQ("");
     setNear(null);
-    router.replace("/direktori", { scroll: false });
+    router.replace("/", { scroll: false });
   };
   const selectPin = (id: string) => {
     setActive(id);
@@ -181,7 +181,7 @@ export default function DirektoriPage() {
     <>
       <div className="wash">
         <Container className="pt-5 pb-8 md:pt-6">
-          <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: "Direktori" }]} />
+          <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Direktori" }]} />
 
           {/* The slot is held while the banners load, so the shortcuts and the search box do not drop a moment later. */}
           {banners.loading ? <Skeleton className={cn("mt-4", BANNER_SHAPE)} /> : !!banners.data?.length && <Banners banners={banners.data} />}
@@ -444,7 +444,7 @@ export default function DirektoriPage() {
             <SectionHead eyebrow="GLP Perk" title="Promo khusus sesama lulusan" href="/lulusan?promo=1" link="Lihat semua promo" />
             <Card className="mt-5 divide-y divide-line">
               {perks.slice(0, 5).map((b) => (
-                <Link key={b.id} href={`/direktori/${b.id}`} className="tap-soft flex items-center gap-4 p-4 hover:bg-page">
+                <Link key={b.id} href={`/bisnis/${b.id}`} className="tap-soft flex items-center gap-4 p-4 hover:bg-page">
                   <Media path={b.image_path} name={b.name} className="h-12 w-12 shrink-0 rounded-xl [&_span]:text-base" />
                   <span className="min-w-0 flex-1">
                     <span className="line-clamp-2 text-sm leading-snug font-semibold">{b.perk}</span>
@@ -609,7 +609,7 @@ const BACKDROPS = {
 // One slide. With a picture, the picture is the banner, as on a shop's front page: nothing is laid over it but its
 // label, and its title is what a screen reader says. Without a picture, the words are the banner.
 function BannerCard({ banner }: { banner: Banner }) {
-  const href = banner.link_url ?? (banner.business_id ? `/direktori/${banner.business_id}` : null);
+  const href = banner.link_url ?? (banner.business_id ? `/bisnis/${banner.business_id}` : null);
   const ad = !!banner.business_id;
   // The picture file may be gone (removed from storage while the banner stayed): then the words are the banner again.
   const [broken, setBroken] = useState(false);

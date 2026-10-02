@@ -12,7 +12,7 @@ export default function NotFound() {
         <h1 className="h-section mt-2">Halaman tidak ditemukan</h1>
         <p className="body-copy mx-auto mt-2 max-w-sm text-sm">Alamatnya mungkin salah ketik, atau halamannya sudah dipindah.</p>
         <Link
-          href="/direktori"
+          href="/"
           className="tap mt-6 inline-flex h-11 items-center rounded-xl bg-maroon px-5 text-sm font-semibold text-white shadow-button hover:bg-maroon-dark"
         >
           Ke Direktori

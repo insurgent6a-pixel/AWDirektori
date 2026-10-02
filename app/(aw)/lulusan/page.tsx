@@ -62,7 +62,7 @@ export default function LulusanPage() {
   return (
     <>
       <PageHero
-        crumbs={[{ label: "Beranda", href: "/direktori" }, { label: "Lulusan" }]}
+        crumbs={[{ label: "Beranda", href: "/" }, { label: "Lulusan" }]}
         title="Kenali para lulusan"
         accent="dan bisnis yang mereka bangun."
         aside={
