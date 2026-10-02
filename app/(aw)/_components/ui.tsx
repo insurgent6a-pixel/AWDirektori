@@ -504,7 +504,8 @@ export function Sheet({
       ref={ref}
       aria-labelledby={titleId}
       className="aw-sheet"
-      onClose={onClose}
+      // React passes "close" up the tree, so a sheet opened from inside this one would close both without the check.
+      onClose={(e) => e.target === ref.current && onClose()}
       // A tap on the backdrop closes the sheet. The press must have begun there too: a text selection dragged out of a
       // field and released on the backdrop is not a tap, and closing would throw the typed text away.
       onPointerDown={(e) => (pressed.current = e.target === ref.current)}

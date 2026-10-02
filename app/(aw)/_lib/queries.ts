@@ -32,8 +32,11 @@ export function searchBusinesses(f: BusinessFilters = {}) {
     .overrideTypes<Business[], { merge: false }>();
 }
 
-export const peluangFeed = () =>
-  supabase.from("peluang_feed").select("*").order("created_at", { ascending: false }).overrideTypes<Peluang[], { merge: false }>();
+// Every open Peluang, or only one person's when their id is given.
+export const peluangFeed = (ownerId?: string) => {
+  const query = supabase.from("peluang_feed").select("*");
+  return (ownerId ? query.eq("owner_id", ownerId) : query).order("created_at", { ascending: false }).overrideTypes<Peluang[], { merge: false }>();
+};
 
 // Upcoming first. Pass `past` for events that already happened, newest first.
 export const eventFeed = (past = false) => {

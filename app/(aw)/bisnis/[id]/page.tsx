@@ -7,7 +7,7 @@ import { BadgeCheck, ExternalLink, Globe, MapPin, Store, Wifi } from "lucide-rea
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { ConnectButton, ContactButton, PromoCodeButton, ReportButton, SaveButton } from "../../_components/actions";
-import { PeluangCard, PerkNote } from "../../_components/cards";
+import { OwnerName, PeluangCard, PerkNote } from "../../_components/cards";
 import MapView from "../../_components/map";
 import { Breadcrumbs, Container } from "../../_components/shell";
 import { Badge, Button, Card, Empty, Failed, Media, Skeleton } from "../../_components/ui";
@@ -182,7 +182,7 @@ function Summary({ business, className }: { business: Business; className?: stri
       </p>
       <h1 className="mt-2 text-[1.75rem] leading-tight font-bold tracking-tight">{business.name}</h1>
       <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
-        <span className="font-semibold text-maroon">{business.owner_name}</span>
+        <OwnerName id={business.owner_id} name={business.owner_name} businessId={business.id} className="text-maroon" />
         <BadgeCheck className="h-4 w-4 text-maroon" aria-label="Lulusan terverifikasi" />
         {business.batch_lp && <Badge>LP {business.batch_lp}</Badge>}
         {business.batch_ib && <Badge tone="gray">IB {business.batch_ib}</Badge>}
