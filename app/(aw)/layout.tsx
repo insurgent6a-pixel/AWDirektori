@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { BottomBar, Footer, Header } from "./_components/shell";
 import { Toaster } from "./_components/ui";
 import { AuthProvider } from "./_lib/auth";
-import { inter } from "./_lib/font";
+import { brand, ui } from "./_lib/font";
 
 export const metadata: Metadata = {
   title: { default: "Direktori Lulusan AsiaWorks", template: "%s · Direktori AsiaWorks" },
@@ -15,13 +15,13 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
-  themeColor: "#ffffff",
+  themeColor: "#8b1a1a", // as asiaworks.id
 };
 
 // Self-contained: fonts, auth and chrome for every directory route. Copy the (aw) folder to move the feature.
 export default function AwLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${inter.variable} aw flex flex-col`}>
+    <div className={`${ui.variable} ${brand.variable} aw flex flex-col`}>
       <AuthProvider>
         <Header />
         {/* Pages and the bottom bar read the query string, which needs a Suspense boundary to prerender. */}

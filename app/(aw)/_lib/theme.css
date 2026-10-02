@@ -3,22 +3,26 @@
    into an existing site's stylesheet leaves that site's styles as they are. */
 
 @theme {
-  /* Grayish white and red maroon, plus quiet status tones. The directory uses only these, never Tailwind's defaults. */
+  /* The asiaworks.id palette (COLORS in the main site's App.jsx): ice white, deep ink, AsiaWorks maroon and gold,
+     plus quiet status tones. The directory uses only these, never Tailwind's defaults. */
   --color-white: #ffffff;
   --color-black: #000000;
-  --color-page: #f3f2f0;
+  --color-page: #f7f7f9; /* ice */
   --color-surface: #ffffff;
-  --color-sunken: #eceae6;
-  --color-line: #e3dfda;
-  --color-ink: #1c1818;
-  --color-ink-soft: #6f6965;
+  --color-sunken: #eef0f4; /* mist */
+  --color-line: #e3e6ec;
+  --color-ink: #14181f;
+  --color-ink-soft: #6b7280;
   --color-maroon: #8b1a1a;
   --color-maroon-dark: #6f1414;
   --color-maroon-deep: #4a0d0f;
-  --color-blush: #f7eceb;
+  --color-maroon-bright: #c0392b; /* the W of the wordmark on the dark footer */
+  --color-blush: #f8e7e5; /* maroonSoft */
   --color-blush-line: #ebd3d1;
-  --color-gold: #7d5f28;
-  --color-gold-soft: #f5efe0;
+  --color-gold: #8a6d1f; /* gold as text: the brand gold below is too light for small text on white */
+  --color-gold-soft: #f6ebd0;
+  --color-brass: #c9a84c; /* the brand gold: rules, plaque line, the dark footer */
+  --color-navy: #0a0d12; /* the footer's dark end */
   --color-green: #2f6b4f;
   --color-green-soft: #e7f1eb;
   --color-amber: #9a5b13;
@@ -107,8 +111,8 @@
   min-height: 100dvh;
   background: var(--color-page);
   color: var(--color-ink);
-  /* One typeface for everything: Inter (next/font sets --font-inter on this element). */
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Montserrat, as on asiaworks.id (next/font sets --font-ui on this element). Cinzel only for the wordmark. */
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -147,16 +151,21 @@
 }
 /* ── Type ─────────────────────────────────────────────────────────── */
 
-/* Headlines are the same Inter as the text: they stand out by size, weight and tight spacing, not by a second face. */
+/* The wordmark face (next/font sets --font-brand). */
+@utility font-brand {
+  font-family: var(--font-brand), "Times New Roman", Georgia, serif;
+}
+
+/* Headlines are the same Montserrat as the text, heavy as on asiaworks.id: they stand out by size and weight. */
 @utility h-display {
-  font-weight: 700;
+  font-weight: 900;
   font-size: clamp(2rem, 1.3rem + 3vw, 3.25rem);
   line-height: 1.1;
   letter-spacing: -0.03em;
   text-wrap: balance;
 }
 @utility h-section {
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
   line-height: 1.2;
   letter-spacing: -0.025em;
@@ -174,8 +183,8 @@
 }
 @utility eyebrow {
   font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-maroon);
 }

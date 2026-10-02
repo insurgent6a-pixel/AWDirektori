@@ -63,15 +63,30 @@ export function Container({ className, children }: { className?: string; childre
   return <div className={cn("mx-auto w-full max-w-6xl px-4 sm:px-6", className)}>{children}</div>;
 }
 
-export function Wordmark() {
+// The AsiaWorks wordmark as on asiaworks.id (<Wordmark> in the main site's App.jsx, same numbers): tracked Cinzel
+// capitals "ASIA" + an oversized maroon "W" + "ORKS", over a gold rule with "DIREKTORI" as the plaque line.
+// The W's margins are measured on the Cinzel glyphs so both gaps (A–W, W–O) equal the gaps between the other letters.
+export function Wordmark({ dark = false }: { dark?: boolean }) {
   return (
-    <Link href="/direktori" className="tap inline-flex h-10 items-center gap-3 hover:opacity-80" aria-label="AsiaWorks Direktori">
-      <span className="text-[17px] font-extrabold tracking-tight">
-        ASIA<span className="text-maroon">W</span>ORKS
+    <Link href="/direktori" className="tap inline-flex items-center hover:opacity-80" aria-label="AsiaWorks Direktori">
+      <span className="font-brand inline-flex flex-col text-[17px] leading-none font-bold">
+        <span className={cn("inline-flex items-baseline whitespace-nowrap", dark ? "text-white" : "text-ink")}>
+          <span className="tracking-[0.16em]">ASIA</span>
+          <span
+            className={cn(
+              "relative top-[0.0485em] mr-[0.012em] -ml-[0.145em] inline-block text-[1.65em]",
+              dark ? "text-maroon-bright" : "text-maroon",
+            )}
+          >
+            W
+          </span>
+          <span className="tracking-[0.16em]">ORKS</span>
+        </span>
+        <span className="mt-[0.18em] flex items-center gap-[0.35em]">
+          <span aria-hidden="true" className="h-px flex-1 rounded-sm bg-gradient-to-r from-brass to-brass/35" />
+          <span className="pl-[0.34em] text-[0.48em] font-semibold tracking-[0.34em] text-brass">DIREKTORI</span>
+        </span>
       </span>
-      {/* The narrowest phones (320px) only have room for the name. */}
-      <span className="h-5 w-px bg-line max-[359px]:hidden" />
-      <span className="text-[17px] text-ink-soft max-[359px]:hidden">Direktori</span>
     </Link>
   );
 }
@@ -226,11 +241,12 @@ export function Footer() {
   const pasangBisnis = usePasangBisnis();
   if (isBare(path) || path.startsWith("/akun")) return null;
   return (
-    <footer className="mt-14 border-t border-line bg-surface md:mt-20">
+    // Dark, with rounded top corners, as the footer of asiaworks.id.
+    <footer className="mt-14 rounded-t-[28px] bg-gradient-to-b from-ink to-navy text-white/60 md:mt-20 md:rounded-t-[36px]">
       <Container className="grid grid-cols-1 gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Wordmark />
-          <p className="body-copy mt-4 max-w-xs text-sm">
+          <Wordmark dark />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
             Direktori bisnis lulusan AsiaWorks. Tempat lulusan saling menemukan, bekerja sama, dan tumbuh bareng.
           </p>
         </div>
@@ -246,9 +262,9 @@ export function Footer() {
         <FooterLinks title="AsiaWorks" links={MAIN_LINKS} />
       </Container>
       <Container>
-        <p className="border-t border-line py-5 text-[13px] text-ink-soft">
+        <p className="border-t border-white/10 py-5 text-[13px] text-white/45">
           © {new Date().getFullYear()} Komunitas lulusan{" "}
-          <a href={MAIN_SITE} className="hover:text-maroon">
+          <a href={MAIN_SITE} className="hover:text-brass">
             AsiaWorks
           </a>
         </p>
@@ -260,11 +276,13 @@ export function Footer() {
 function FooterLinks({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
     <div>
-      <p className="text-[13px] font-semibold">{title}</p>
-      <ul className="mt-1.5 text-sm text-ink-soft">
+      {/* Heading + short gold bar, as on asiaworks.id */}
+      <p className="text-[11px] font-bold tracking-[0.22em] text-white uppercase">{title}</p>
+      <span aria-hidden="true" className="mt-3 block h-0.5 w-7 rounded-sm bg-brass" />
+      <ul className="mt-2 text-sm text-white/65">
         {links.map((link) => (
           <li key={link.href}>
-            <Link href={link.href} className="tap inline-flex min-h-10 items-center hover:text-maroon md:min-h-8">
+            <Link href={link.href} className="tap inline-flex min-h-10 items-center hover:text-brass md:min-h-8">
               {link.label}
             </Link>
           </li>
