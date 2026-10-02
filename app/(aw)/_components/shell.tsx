@@ -24,6 +24,15 @@ import { Avatar, Button } from "./ui";
 
 type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number };
 
+// The main AsiaWorks site (training programmes, schedule, registration). The directory lives on its own subdomain.
+const MAIN_SITE = "https://asiaworks.id";
+const MAIN_LINKS = [
+  { href: `${MAIN_SITE}/`, label: "Situs AsiaWorks" },
+  { href: `${MAIN_SITE}/#programmes`, label: "Program training" },
+  { href: `${MAIN_SITE}/#schedule`, label: "Jadwal training" },
+  { href: `${MAIN_SITE}/#contact`, label: "Kontak" },
+];
+
 export const NAV: NavItem[] = [
   { href: "/direktori", label: "Direktori", icon: Compass },
   { href: "/peluang", label: "Peluang", icon: Handshake },
@@ -96,6 +105,10 @@ export function Header() {
           </nav>
         )}
         <div className={cn("flex items-center gap-2", loading && "invisible")}>
+          {/* Back to the main site; on phones the footer carries it. */}
+          <a href={MAIN_SITE} className="tap hidden rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-page hover:text-ink lg:block">
+            asiaworks.id
+          </a>
           {!user ? (
             <>
               {/* No link to the page you are already on. */}
@@ -214,7 +227,7 @@ export function Footer() {
   if (isBare(path) || path.startsWith("/akun")) return null;
   return (
     <footer className="mt-14 border-t border-line bg-surface md:mt-20">
-      <Container className="grid grid-cols-1 gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
+      <Container className="grid grid-cols-1 gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Wordmark />
           <p className="body-copy mt-4 max-w-xs text-sm">
@@ -230,9 +243,15 @@ export function Footer() {
             { href: "/staff", label: "Masuk staf" },
           ]}
         />
+        <FooterLinks title="AsiaWorks" links={MAIN_LINKS} />
       </Container>
       <Container>
-        <p className="border-t border-line py-5 text-[13px] text-ink-soft">© {new Date().getFullYear()} Komunitas lulusan AsiaWorks</p>
+        <p className="border-t border-line py-5 text-[13px] text-ink-soft">
+          © {new Date().getFullYear()} Komunitas lulusan{" "}
+          <a href={MAIN_SITE} className="hover:text-maroon">
+            AsiaWorks
+          </a>
+        </p>
       </Container>
     </footer>
   );
