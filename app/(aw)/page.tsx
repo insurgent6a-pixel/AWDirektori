@@ -81,7 +81,7 @@ export default function DirektoriPage() {
 
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(null);
   const [radius, setRadius] = useState(25);
-  const [view, setView] = useState<"daftar" | "peta">("daftar");
+  const [view, setView] = useState<"daftar" | "peta">("peta");
   const [active, setActive] = useState<string | null>(null);
 
   // The whole directory once (counts, industries, cities, perks), then a filtered search only when a filter is on.
@@ -321,8 +321,8 @@ export default function DirektoriPage() {
           <Tabs
             className="mt-4 lg:hidden"
             items={[
-              { value: "daftar", label: "Daftar" },
               { value: "peta", label: "Peta" },
+              { value: "daftar", label: "Daftar" },
             ]}
             value={view}
             onChange={setView}

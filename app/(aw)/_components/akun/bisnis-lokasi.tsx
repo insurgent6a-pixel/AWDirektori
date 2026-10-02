@@ -3,7 +3,7 @@
 // Locations of one listing: several branches, each with a map pin. A location can be approximate (an area instead
 // of a point), or the whole listing can hide its locations and appear as online only.
 
-import { MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { AREAS } from "../../_lib/constants";
 import { useQuery } from "../../_lib/hooks";
@@ -61,13 +61,18 @@ export function LocationsSection({ business, onChanged }: { business: Biz; onCha
     onChanged();
   };
 
+  // No location yet: one big action, the pin on the map. "Online saja" is the way out for a business without a place.
+  const empty = !list.loading && !list.error && !list.data?.length;
+
   return (
     <Card className="p-5">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex min-h-9 items-center justify-between gap-3">
         <h3 className="h-card">Lokasi</h3>
-        <Button size="sm" variant="secondary" onClick={() => setEditing("new")}>
-          <Plus className="h-4 w-4" /> Tambah lokasi
-        </Button>
+        {!empty && (
+          <Button size="sm" variant="secondary" onClick={() => setEditing("new")}>
+            <Plus className="h-4 w-4" /> Tambah lokasi
+          </Button>
+        )}
       </div>
 
       {list.error && (
@@ -100,33 +105,32 @@ export function LocationsSection({ business, onChanged }: { business: Biz; onCha
           ))}
         </ul>
       ) : (
-        // No location yet: the pin on the map is the first choice, "Online saja" the second.
-        !list.loading &&
-        !list.error && (
+        empty && (
           <button
             type="button"
             onClick={() => setEditing("new")}
-            className="tap mt-4 flex w-full items-center gap-3 rounded-xl border border-blush-line bg-blush p-3.5 text-left hover:opacity-90"
+            className="tap mt-3 flex w-full items-center gap-4 rounded-2xl bg-maroon p-5 text-left text-white shadow-button hover:bg-maroon-dark"
           >
-            <MapPin className="h-5 w-5 shrink-0 text-maroon" />
-            <span className="text-sm">
-              <b className="block font-semibold text-maroon">Taruh pin di peta</b>
-              <span className="text-[13px] text-maroon/80">Tandai lokasi bisnismu supaya muncul di peta dan di pencarian terdekat.</span>
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white text-maroon">
+              <MapPin className="h-7 w-7" />
             </span>
+            <span className="min-w-0 flex-1">
+              <b className="block text-lg leading-snug font-semibold">Taruh pin di peta</b>
+              <span className="mt-0.5 block text-[13px] text-white/85">Ketuk di sini, lalu tandai lokasi bisnismu supaya muncul di peta dan di pencarian terdekat.</span>
+            </span>
+            <ChevronRight className="h-6 w-6 shrink-0" />
           </button>
         )
       )}
 
-      <label className="mt-3 flex items-start justify-between gap-4 rounded-xl bg-page p-3.5">
+      {empty && <p className="mt-5 text-[13px] text-ink-soft">Bisnismu tidak punya tempat? Pilih ini saja:</p>}
+      <label className="mt-2 flex items-start justify-between gap-4 rounded-xl bg-page p-3.5">
         <span className="text-sm">
           <b className="block font-semibold">Online saja</b>
           <span className="text-[13px] text-ink-soft">Sembunyikan semua lokasi. Bisnis tampil sebagai online dan tidak muncul di peta.</span>
         </span>
         <Toggle checked={business.online_only} onChange={setOnline} label="Online saja" />
       </label>
-      {!list.loading && !list.error && !list.data?.length && (
-        <p className="mt-3 text-[13px] text-ink-soft">Belum ada lokasi. Taruh minimal satu pin, atau pilih Online saja.</p>
-      )}
 
       <Sheet open={!!editing} onClose={() => setEditing(null)} title={editing === "new" ? "Tambah lokasi" : "Ubah lokasi"}>
         {editing && (
