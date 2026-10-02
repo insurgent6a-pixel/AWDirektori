@@ -70,14 +70,6 @@ export function LocationsSection({ business, onChanged }: { business: Biz; onCha
         </Button>
       </div>
 
-      <label className="mt-4 flex items-start justify-between gap-4 rounded-xl bg-page p-3.5">
-        <span className="text-sm">
-          <b className="block font-semibold">Online saja</b>
-          <span className="text-[13px] text-ink-soft">Sembunyikan semua lokasi. Bisnis tampil sebagai online dan tidak muncul di peta.</span>
-        </span>
-        <Toggle checked={business.online_only} onChange={setOnline} label="Online saja" />
-      </label>
-
       {list.error && (
         <div className="mt-3">
           <Failed query={list} />
@@ -108,7 +100,32 @@ export function LocationsSection({ business, onChanged }: { business: Biz; onCha
           ))}
         </ul>
       ) : (
-        !list.loading && !list.error && <p className="mt-3 text-[13px] text-ink-soft">Belum ada lokasi. Tambahkan minimal satu, atau pilih Online saja.</p>
+        // No location yet: the pin on the map is the first choice, "Online saja" the second.
+        !list.loading &&
+        !list.error && (
+          <button
+            type="button"
+            onClick={() => setEditing("new")}
+            className="tap mt-4 flex w-full items-center gap-3 rounded-xl border border-blush-line bg-blush p-3.5 text-left hover:opacity-90"
+          >
+            <MapPin className="h-5 w-5 shrink-0 text-maroon" />
+            <span className="text-sm">
+              <b className="block font-semibold text-maroon">Taruh pin di peta</b>
+              <span className="text-[13px] text-maroon/80">Tandai lokasi bisnismu supaya muncul di peta dan di pencarian terdekat.</span>
+            </span>
+          </button>
+        )
+      )}
+
+      <label className="mt-3 flex items-start justify-between gap-4 rounded-xl bg-page p-3.5">
+        <span className="text-sm">
+          <b className="block font-semibold">Online saja</b>
+          <span className="text-[13px] text-ink-soft">Sembunyikan semua lokasi. Bisnis tampil sebagai online dan tidak muncul di peta.</span>
+        </span>
+        <Toggle checked={business.online_only} onChange={setOnline} label="Online saja" />
+      </label>
+      {!list.loading && !list.error && !list.data?.length && (
+        <p className="mt-3 text-[13px] text-ink-soft">Belum ada lokasi. Taruh minimal satu pin, atau pilih Online saja.</p>
       )}
 
       <Sheet open={!!editing} onClose={() => setEditing(null)} title={editing === "new" ? "Tambah lokasi" : "Ubah lokasi"}>
