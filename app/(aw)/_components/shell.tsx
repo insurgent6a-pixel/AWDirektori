@@ -26,11 +26,41 @@ type NavItem = { href: string; label: string; icon: LucideIcon; badge?: number }
 
 // The main AsiaWorks site (training programmes, schedule, registration). The directory lives on its own subdomain.
 const MAIN_SITE = "https://asiaworks.id";
-const MAIN_LINKS = [
-  { href: `${MAIN_SITE}/`, label: "Situs AsiaWorks" },
-  { href: `${MAIN_SITE}/#programmes`, label: "Program training" },
-  { href: `${MAIN_SITE}/#schedule`, label: "Jadwal training" },
+// The main site's menu (Footer → NAVIGASI in its App.jsx); its pages are #hash routes.
+const MAIN_NAV = [
+  { href: `${MAIN_SITE}/`, label: "Home" },
+  { href: `${MAIN_SITE}/#programmes`, label: "Program" },
+  { href: `${MAIN_SITE}/#schedule`, label: "Jadwal" },
+  { href: `${MAIN_SITE}/#trainers`, label: "Trainer" },
+  { href: `${MAIN_SITE}/#testimonials`, label: "Testimoni" },
+  { href: `${MAIN_SITE}/#gallery`, label: "Galeri" },
+  { href: `${MAIN_SITE}/#about`, label: "Tentang Kami" },
   { href: `${MAIN_SITE}/#contact`, label: "Kontak" },
+  { href: `${MAIN_SITE}/#kebijakan`, label: "Kebijakan Refund" },
+];
+// Office WhatsApp — keep in sync with OFFICE_WA in the main site's App.jsx.
+const OFFICE_WA = "6281219978707";
+const OFFICE_WA_LABEL = "+62 812-1997-8707";
+// Social accounts with the main site's icon paths (24×24).
+const SOCIAL = [
+  {
+    name: "Instagram",
+    handle: "@asiaworksid",
+    url: "https://www.instagram.com/asiaworksid?igsh=dzY3ZmtlY2tma3Fh",
+    icon: "M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.2 15.6 2.2 15.2 2.2 12s0-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.15 0-3.5 0-4.74.07-.9.04-1.38.19-1.7.31-.43.17-.74.37-1.06.69-.32.32-.52.63-.69 1.06-.12.32-.27.8-.31 1.7C3.43 8.5 3.43 8.85 3.43 12s0 3.5.07 4.74c.04.9.19 1.38.31 1.7.17.43.37.74.69 1.06.32.32.63.52 1.06.69.32.12.8.27 1.7.31 1.24.07 1.59.07 4.74.07s3.5 0 4.74-.07c.9-.04 1.38-.19 1.7-.31.43-.17.74-.37 1.06-.69.32-.32.52-.63.69-1.06.12-.32.27-.8.31-1.7.07-1.24.07-1.59.07-4.74s0-3.5-.07-4.74c-.04-.9-.19-1.38-.31-1.7a2.85 2.85 0 0 0-.69-1.06 2.85 2.85 0 0 0-1.06-.69c-.32-.12-.8-.27-1.7-.31C15.5 4 15.15 4 12 4Zm0 3.06A4.94 4.94 0 1 1 12 16.94 4.94 4.94 0 0 1 12 7.06Zm0 1.8A3.14 3.14 0 1 0 12 15.14 3.14 3.14 0 0 0 12 8.86Zm5.14-2.99a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z",
+  },
+  {
+    name: "Facebook",
+    handle: "AsiaWorksID",
+    url: "https://facebook.com/AsiaWorksID",
+    icon: "M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z",
+  },
+  {
+    name: "YouTube",
+    handle: "@AsiaworksIndonesia",
+    url: "https://www.youtube.com/@AsiaworksIndonesia",
+    icon: "M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81ZM9.55 15.57V8.43L15.82 12l-6.27 3.57Z",
+  },
 ];
 
 export const NAV: NavItem[] = [
@@ -236,59 +266,184 @@ export function BottomBar() {
   );
 }
 
+// The footer of asiaworks.id, rebuilt here (Footer in the main site's App.jsx): next step, brand, social, office,
+// navigation, the giant outlined wordmark and the copyright bar. The main site's links open asiaworks.id.
 export function Footer() {
   const path = usePathname();
   const pasangBisnis = usePasangBisnis();
   if (isBare(path) || path.startsWith("/akun")) return null;
   return (
-    // Dark, with rounded top corners, as the footer of asiaworks.id.
-    <footer className="mt-14 rounded-t-[28px] bg-gradient-to-b from-ink to-navy text-white/60 md:mt-20 md:rounded-t-[36px]">
-      <Container className="grid grid-cols-1 gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div>
+    <footer className="relative mt-14 overflow-hidden rounded-t-[28px] bg-gradient-to-b from-ink to-navy text-white/60 md:mt-20 md:rounded-t-[36px]">
+      {/* soft maroon + gold glows for depth */}
+      <div aria-hidden="true" className="pointer-events-none absolute -top-30 -right-20 h-105 w-105 rounded-full bg-[radial-gradient(circle,rgb(139_26_26/0.33),transparent_65%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -left-15 h-95 w-95 rounded-full bg-[radial-gradient(circle,rgb(201_168_76/0.25),transparent_65%)]" />
+
+      {/* Next step: the footer opens with the main action, as on asiaworks.id */}
+      <Container className="relative max-w-[1400px]">
+        <div className="grid grid-cols-1 items-center gap-8 border-b border-white/10 pt-12 pb-10 md:grid-cols-2 md:pt-20 md:pb-16">
+          <div>
+            <p className="flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.2em] text-brass uppercase">
+              <span aria-hidden="true" className="h-px w-8 bg-brass" />
+              Langkah berikutnya
+            </p>
+            <p className="mt-4 text-[clamp(2.4rem,6vw,4.6rem)] leading-[0.95] font-black tracking-[-0.03em] text-white">
+              Siap untuk <span className="text-brass">melangkah?</span>
+            </p>
+            <p className="mt-5 max-w-[520px] text-base leading-[1.8] text-white/70">
+              Apa yang Anda temukan di sini mengubah segalanya di luar sana. Mulai dari Basic Training — tidak perlu
+              pengalaman apa pun.
+            </p>
+          </div>
+          <div className="rounded-3xl border border-white/12 bg-white/5 p-5 md:p-7">
+            <p className="text-[clamp(1.3rem,3vw,1.7rem)] leading-[1.1] font-black tracking-[-0.02em] text-white">
+              Lihat jadwal Basic Training berikutnya di asiaworks.id.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <a href={`${MAIN_SITE}/#schedule`} className={cn(PILL, "bg-brass text-ink hover:brightness-105")}>
+                LIHAT JADWAL <span aria-hidden="true">→</span>
+              </a>
+              <a href={`${MAIN_SITE}/#contact`} className={cn(PILL, "border border-white/45 text-white hover:bg-white/10")}>
+                HUBUNGI KAMI
+              </a>
+            </div>
+          </div>
+        </div>
+      </Container>
+
+      <Container className="relative grid max-w-[1400px] grid-cols-1 gap-10 pt-10 pb-8 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_1fr_1.5fr] md:pt-16">
+        {/* Brand */}
+        <div className="max-w-[300px]">
           <Wordmark dark />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
+          <p className="mt-4 mb-4 text-[0.8rem] font-extrabold tracking-[0.08em] text-brass uppercase">works in progress</p>
+          <p className="text-sm leading-[1.75] text-white/55">
             Direktori bisnis lulusan AsiaWorks. Tempat lulusan saling menemukan, bekerja sama, dan tumbuh bareng.
           </p>
         </div>
-        <FooterLinks title="Jelajahi" links={NAV.map(({ href, label }) => ({ href, label }))} />
-        <FooterLinks
-          title="Untuk lulusan"
-          links={[
-            { href: pasangBisnis, label: "Pasang bisnis" },
-            { href: "/masuk", label: "Masuk" },
-            { href: "/staff", label: "Masuk staf" },
-          ]}
-        />
-        <FooterLinks title="AsiaWorks" links={MAIN_LINKS} />
-      </Container>
-      <Container>
-        <p className="border-t border-white/10 py-5 text-[13px] text-white/45">
-          © {new Date().getFullYear()} Komunitas lulusan{" "}
-          <a href={MAIN_SITE} className="hover:text-brass">
-            AsiaWorks
+
+        {/* Follow us */}
+        <div>
+          <FooterHeading>Ikuti kami</FooterHeading>
+          {SOCIAL.map(({ name, handle, url, icon }) => (
+            <a
+              key={name}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tap mb-2.5 flex w-fit items-center gap-3 rounded-full border border-white/8 bg-white/4 py-1.5 pr-3.5 pl-1.5 hover:border-brass/40"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-brass/35 bg-white/6">
+                <svg width="18" height="18" viewBox="0 0 24 24" className="fill-brass" aria-hidden="true">
+                  <path d={icon} />
+                </svg>
+              </span>
+              <span>
+                <span className="block text-[0.82rem] font-bold text-white">{name}</span>
+                <span className="block text-[0.72rem] text-white/50">{handle}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        {/* Office */}
+        <div>
+          <FooterHeading>Office</FooterHeading>
+          <a href="https://maps.app.goo.gl/L5NTSyhyw9sDuYSFA?g_st=ic" target="_blank" rel="noopener noreferrer" className="block text-[0.85rem] leading-[1.85]">
+            <span className="mb-0.5 block font-bold text-brass">AsiaWorks Learning Center</span>
+            <span className="block">Lantai 2</span>
+            <span className="block">Jl. Kemang Raya No. 14B</span>
+            <span className="block">Bangka, Mampang Prapatan</span>
+            <span className="block">Jakarta Selatan</span>
+            <span className="mt-2.5 inline-flex items-center gap-1.5 border-b border-brass pb-px text-[0.8rem] text-brass">
+              <svg width="13" height="13" viewBox="0 0 24 24" className="fill-brass" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
+              </svg>
+              Lihat di Google Maps
+            </span>
           </a>
-        </p>
+          <a
+            href={`https://wa.me/${OFFICE_WA}?text=${encodeURIComponent("Halo AsiaWorks, saya ingin bertanya.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 text-[0.85rem] font-bold text-white hover:text-brass"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" className="fill-brass" aria-hidden="true">
+              <path d="M6 3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-8l-5 4v-4.2A3 3 0 0 1 3 14V6a3 3 0 0 1 3-3Z" />
+            </svg>
+            WhatsApp {OFFICE_WA_LABEL}
+          </a>
+        </div>
+
+        {/* Navigation: the directory's own pages, then the main site's */}
+        <div className="grid grid-cols-2 gap-x-4">
+          <div>
+            <FooterHeading>Direktori</FooterHeading>
+            <FooterLinkList
+              links={[
+                ...NAV.map(({ href, label }) => ({ href, label })),
+                { href: pasangBisnis, label: "Pasang bisnis" },
+                { href: "/masuk", label: "Masuk" },
+                { href: "/staff", label: "Masuk staf" },
+              ]}
+            />
+          </div>
+          <div>
+            <FooterHeading>AsiaWorks</FooterHeading>
+            <FooterLinkList links={MAIN_NAV} />
+          </div>
+        </div>
       </Container>
+
+      {/* giant outlined wordmark bleeding off the bottom edge — decorative only */}
+      <div aria-hidden="true" className="relative mt-4 h-[clamp(3.2rem,9vw,8.5rem)] overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[clamp(4.2rem,12vw,11.5rem)] leading-[0.8] font-black tracking-[-0.03em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1px_rgb(255_255_255/0.16)]">
+          ASIAWORKS
+        </div>
+      </div>
+
+      <div className="relative border-t border-white/9">
+        <Container className="flex max-w-[1400px] flex-wrap items-center justify-between gap-4 py-4 text-xs tracking-[0.04em] text-white/45">
+          <span>
+            © {new Date().getFullYear()} AsiaWorks Indonesia. All Rights Reserved. ·{" "}
+            <a href={`${MAIN_SITE}/#kebijakan`} className="text-white/70 underline underline-offset-3 hover:text-brass">
+              Kebijakan Pembatalan &amp; Pengembalian Dana
+            </a>
+          </span>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="tap rounded-full border border-white/14 bg-white/6 px-3.5 py-1.5 text-[0.72rem] font-bold tracking-[0.08em] text-white"
+          >
+            KE ATAS ↑
+          </button>
+        </Container>
+      </div>
     </footer>
   );
 }
 
-function FooterLinks({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+const PILL = "tap inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.78rem] font-extrabold tracking-[0.08em]";
+
+// Heading + short gold bar, as on asiaworks.id
+function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      {/* Heading + short gold bar, as on asiaworks.id */}
-      <p className="text-[11px] font-bold tracking-[0.22em] text-white uppercase">{title}</p>
-      <span aria-hidden="true" className="mt-3 block h-0.5 w-7 rounded-sm bg-brass" />
-      <ul className="mt-2 text-sm text-white/65">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link href={link.href} className="tap inline-flex min-h-10 items-center hover:text-brass md:min-h-8">
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <p className="text-[0.72rem] font-bold tracking-[0.22em] text-white uppercase">{children}</p>
+      <span aria-hidden="true" className="mt-4 mb-3.5 block h-0.5 w-7 rounded-sm bg-brass" />
+    </>
+  );
+}
+
+function FooterLinkList({ links }: { links: { href: string; label: string }[] }) {
+  return (
+    <ul className="text-[0.85rem] font-medium text-white/62">
+      {links.map((link) => (
+        <li key={link.href + link.label}>
+          <Link href={link.href} className="inline-flex min-h-9 items-center transition hover:translate-x-1 hover:text-white md:min-h-7">
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
 
