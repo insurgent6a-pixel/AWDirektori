@@ -66,7 +66,7 @@ async function cleanup(tag, ids) {
   }
 }
 
-const SWITCHES = { auto_approve: false, auto_approve_business: false, auto_approve_peluang: false };
+const SWITCHES = { auto_approve: false, auto_approve_business: false, auto_approve_peluang: false, auto_approve_promo: false };
 const { data: settings } = await admin.from('settings').select(Object.keys(SWITCHES).join()).single().throwOnError();
 
 try {
@@ -337,7 +337,7 @@ try {
     }
   });
 
-  await step('5 auto approve for listings and Peluang: staff only; on approves the queue and whatever is sent next, a corrected Peluang included; off restores review', async () => {
+  await step('5 auto approve for listings, Peluang and promos: staff only; on approves the queue and whatever is sent next, a corrected Peluang included; off restores review', async () => {
     const listing = async () => { // an online-only listing of Ana's, ready to send
       const { data } = await ana.from('businesses')
         .insert({ owner_id: id.ana, name: `Auto ${run}`, description: 'Demo', category: 'Lainnya', links: ['https://example.com/auto'], online_only: true })
@@ -347,26 +347,30 @@ try {
     };
     const ask = async () => (await budi.from('peluang').insert({ owner_id: id.budi, kind: 'vendor', title: `Auto ${run}`, description: 'Demo' }).select('id, status').single().throwOnError()).data;
     const statusOf = async (table, row) => (await admin.from(table).select('status').eq('id', row).single().throwOnError()).data.status;
-    const fns = ['set_auto_approve_business', 'set_auto_approve_peluang'];
+    const perk = async (business) => (await ana.from('promos').insert({ business_id: business, title: 'Diskon demo', code: `AUTO-${run}` }).select('id, status').single().throwOnError()).data;
+    const fns = ['set_auto_approve_business', 'set_auto_approve_peluang', 'set_auto_approve_promo'];
     for (const fn of fns) assert.equal((await ana.rpc(fn, { p_on: true })).error?.code, DENIED, fn);
     assert.equal((await ana.from('settings').update({ auto_approve_peluang: true }).eq('id', true)).error?.code, DENIED);
 
     const [queuedB, nextB] = [await listing(), await listing()];
     await ana.rpc('submit_business', { p_business: queuedB }).throwOnError();
     const queuedP = await ask();
-    assert.deepEqual([await statusOf('businesses', queuedB), queuedP.status], ['pending', 'pending']);
-    const mine = [queuedB, nextB, queuedP.id];
+    const queuedPerk = await perk(queuedB);
+    assert.deepEqual([await statusOf('businesses', queuedB), queuedP.status, queuedPerk.status], ['pending', 'pending', 'pending']);
+    const mine = [queuedB, nextB, queuedP.id, queuedPerk.id];
     // "on" approves everything waiting, the seed's rows included: note them and put them straight back
     const others = {};
-    for (const table of ['businesses', 'peluang'])
+    for (const table of ['businesses', 'peluang', 'promos'])
       others[table] = (await admin.from(table).select('id').eq('status', 'pending').throwOnError()).data.map((r) => r.id).filter((r) => !mine.includes(r));
     try {
       for (const fn of fns) await staff.rpc(fn, { p_on: true }).throwOnError();
-      assert.deepEqual([await statusOf('businesses', queuedB), await statusOf('peluang', queuedP.id)], ['approved', 'approved']);
+      assert.deepEqual([await statusOf('businesses', queuedB), await statusOf('peluang', queuedP.id), await statusOf('promos', queuedPerk.id)], ['approved', 'approved', 'approved']);
       await ana.rpc('submit_business', { p_business: nextB }).throwOnError();
       const nextP = await ask();
-      mine.push(nextP.id);
-      assert.deepEqual([await statusOf('businesses', nextB), nextP.status], ['approved', 'approved']);
+      const nextPerk = await perk(nextB);
+      mine.push(nextP.id, nextPerk.id);
+      assert.deepEqual([await statusOf('businesses', nextB), nextP.status, nextPerk.status], ['approved', 'approved', 'approved']);
+      assert.equal((await anon.rpc('search_businesses', { p_ids: [nextB] }).throwOnError()).data[0]?.perk, 'Diskon demo');
       assert.equal((await anon.rpc('search_businesses', { p_ids: [nextB] }).throwOnError()).data.length, 1);
       assert.equal((await anon.from('peluang_feed').select('id').eq('id', nextP.id).throwOnError()).data.length, 1);
       await staff.rpc('moderate', { p_kind: 'peluang', p_id: nextP.id, p_action: 'reject', p_note: 'Kurang jelas' }).throwOnError();
@@ -375,8 +379,8 @@ try {
       // the log: the queue under the staff member who flipped the switch, what came after under nobody
       const { data: log } = await staff.from('audit_log').select('action, target_id, actor_id').in('target_id', mine).in('action', ['approved', 'auto_approved']).throwOnError();
       assert.deepEqual([...new Set(log.map((r) => `${r.action} ${r.target_id} by ${r.actor_id}`))].sort(), [
-        `approved ${queuedB} by ${id.staff}`, `approved ${queuedP.id} by ${id.staff}`,
-        `auto_approved ${nextB} by null`, `auto_approved ${nextP.id} by null`,
+        `approved ${queuedB} by ${id.staff}`, `approved ${queuedP.id} by ${id.staff}`, `approved ${queuedPerk.id} by ${id.staff}`,
+        `auto_approved ${nextB} by null`, `auto_approved ${nextP.id} by null`, `auto_approved ${nextPerk.id} by null`,
       ].sort());
     } finally {
       for (const fn of fns) await staff.rpc(fn, { p_on: false });
@@ -390,7 +394,7 @@ try {
     await admin.from('audit_log').delete().in('target_id', mine).throwOnError();
   });
 
-  await step('12 Hubungkan: graduates only; contact details open to both sides on acceptance, not before; decline; intro via staff', async () => {
+  await step('12 Hubungkan: graduates only; contact details open to both sides on acceptance, not before; decline; staff take no part and see no request', async () => {
     const hi = { p_message: 'Halo, saya ingin pesan kopi untuk acara kantor.', p_business: kopi };
     assert.equal((await dodi.rpc('connect', hi)).error?.code, DENIED);
     assert.match((await ana.rpc('connect', hi)).error?.message, /milikmu/);
@@ -422,10 +426,11 @@ try {
     const declined = (await cici.rpc('my_connections').throwOnError()).data.find((r) => r.id === no);
     assert.deepEqual([declined.status, declined.other_phone, declined.business_contact], ['declined', null, null]);
 
-    await budi.rpc('respond_connection', { p_id: answer, p_action: 'intro' }).throwOnError(); // asks AsiaWorks to introduce them
-    assert.equal((await staff.from('connections').select('status').eq('id', answer).single().throwOnError()).data.status, 'intro');
-    await staff.rpc('respond_connection', { p_id: answer, p_action: 'accept' }).throwOnError();
-    assert.equal((await staff.from('connections').select('status').eq('id', answer).single().throwOnError()).data.status, 'accepted');
+    // an introduction through staff is no longer on offer, and staff cannot read a request
+    assert.match((await budi.rpc('respond_connection', { p_id: answer, p_action: 'intro' })).error?.message, /tidak ditemukan/);
+    assert.equal((await staff.from('connections').select('id').in('id', [req, answer]).throwOnError()).data.length, 0);
+    await budi.rpc('respond_connection', { p_id: answer, p_action: 'accept' }).throwOnError();
+    assert.equal((await admin.from('connections').select('status').eq('id', answer).single().throwOnError()).data.status, 'accepted');
   });
 
   await step('12 Hubungkan: the same request sent several times at once (a double tap) leaves one pending request', async () => {

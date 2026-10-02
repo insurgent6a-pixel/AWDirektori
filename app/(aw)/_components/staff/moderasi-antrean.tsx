@@ -1,13 +1,13 @@
 "use client";
 
-// The smaller moderation queues: Peluang, Promo, member reports and introduction requests.
+// The smaller moderation queues: Peluang, Promo and member reports.
 
-import { Flag, UserRoundSearch } from "lucide-react";
+import { Flag } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "../../_lib/auth";
 import { PELUANG_KINDS, REVIEW_LABELS, REVIEW_TONES } from "../../_lib/constants";
-import { pesan, tanggal, waLink } from "../../_lib/format";
+import { tanggal } from "../../_lib/format";
 import { useQuery } from "../../_lib/hooks";
 import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
@@ -120,6 +120,16 @@ export function PromoQueue({ onChanged }: QueueProps) {
   const done = () => (list.reload(), onChanged());
   return (
     <>
+      <div className="-mt-2 mb-3">
+        <AutoApprove
+          setting="auto_approve_promo"
+          title="Auto Approve Promo"
+          onChanged={done}
+          warning="Semua promo yang sedang menunggu langsung tayang. Selama menyala, setiap promo baru juga langsung tayang tanpa ditinjau. Yang sudah tayang hanya bisa ditangguhkan satu per satu."
+        >
+          Untuk demo. Selama menyala, setiap promo langsung tayang di kartu bisnisnya, termasuk yang sedang menunggu saat ini.
+        </AutoApprove>
+      </div>
       <StatusFilter value={status} onChange={setStatus} />
       <Failed query={list} />
       {list.loading && !list.data ? (
@@ -241,94 +251,6 @@ export function LaporanQueue({ onChanged }: QueueProps) {
           if (ok) await resolve(r.id);
         }}
       />
-    </div>
-  );
-}
-
-// ── Perkenalan ──────────────────────────────────────────────────────
-
-type Party = { id: string; full_name: string; nickname: string | null; batch_lp: number | null } | null;
-type IntroRow = { id: string; message: string; created_at: string; from: Party; to: Party; business: Named; peluang: { title: string } | null };
-type Contact = { id: string; email: string | null; phone: string | null };
-
-// The owner asked AsiaWorks to introduce them. Staff reach out to both, then mark it done (which opens the contacts).
-export function PerkenalanQueue({ onChanged }: QueueProps) {
-  const list = useQuery(
-    () =>
-      supabase
-        .from("connections")
-        .select(
-          "id, message, created_at, from:profiles!connections_from_id_fkey(id, full_name, nickname, batch_lp), to:profiles!connections_to_id_fkey(id, full_name, nickname, batch_lp), business:businesses(id, name), peluang:peluang(title)",
-        )
-        .eq("status", "intro")
-        .order("created_at")
-        .overrideTypes<IntroRow[], { merge: false }>(),
-    [],
-  );
-  const contacts = useQuery(() => supabase.rpc("staff_users").overrideTypes<Contact[], { merge: false }>(), []);
-  const contactOf = (p: Party) => contacts.data?.find((c) => c.id === p?.id);
-  const [busy, setBusy] = useState<string | null>(null); // a double tap must not act twice
-
-  const close = async (id: string, action: "accept" | "decline") => {
-    setBusy(id + action);
-    const { error } = await supabase.rpc("respond_connection", { p_id: id, p_action: action });
-    setBusy(null);
-    if (error) return toast(pesan(error), "error");
-    toast(action === "accept" ? "Ditandai sudah dikenalkan. Kontak keduanya saling terbuka." : "Permintaan ditutup.");
-    list.reload();
-    onChanged();
-  };
-
-  if (list.error) return <Failed query={list} />;
-  if (list.loading && !list.data) return <Loading />;
-  if (!list.data?.length) {
-    return (
-      <Empty icon={<UserRoundSearch className="h-6 w-6" />} title="Tidak ada permintaan perkenalan">
-        Saat pemilik bisnis meminta AsiaWorks memperkenalkan mereka dengan seorang lulusan, permintaannya muncul di sini.
-      </Empty>
-    );
-  }
-  return (
-    <div className="space-y-3">
-      {list.data.map((c) => (
-        <Card key={c.id} className="p-4">
-          <p className="text-sm">
-            <b className="font-semibold">{personLabel(c.to)}</b> minta dikenalkan dengan <b className="font-semibold">{personLabel(c.from)}</b>
-          </p>
-          <p className="mt-0.5 text-[13px] text-ink-soft">
-            {c.peluang ? `Peluang “${c.peluang.title}”` : `Bisnis ${c.business?.name || "tanpa nama"}`} · {tanggal(c.created_at)}
-          </p>
-          <p className="body-copy mt-2 rounded-xl bg-page px-3.5 py-3 text-sm whitespace-pre-line">{c.message}</p>
-          <ul className="mt-3 grid grid-cols-1 gap-2 text-[13px] sm:grid-cols-2">
-            {[c.to, c.from].map((party) => {
-              const contact = contactOf(party);
-              return (
-                <li key={party?.id} className="rounded-xl border border-line p-3">
-                  <p className="font-semibold">{personLabel(party)}</p>
-                  {contact?.phone && (
-                    <a href={waLink(contact.phone)} target="_blank" rel="noopener noreferrer" className="tap-soft block py-2.5 text-maroon hover:underline">
-                      WhatsApp {contact.phone}
-                    </a>
-                  )}
-                  {contact?.email && (
-                    <a href={`mailto:${contact.email}`} className="tap-soft block py-2.5 text-maroon hover:underline">
-                      {contact.email}
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-line pt-3">
-            <Button size="sm" loading={busy === c.id + "accept"} disabled={busy === c.id + "decline"} onClick={() => close(c.id, "accept")}>
-              Sudah dikenalkan
-            </Button>
-            <Button size="sm" variant="secondary" loading={busy === c.id + "decline"} disabled={busy === c.id + "accept"} onClick={() => close(c.id, "decline")}>
-              Tutup tanpa perkenalan
-            </Button>
-          </div>
-        </Card>
-      ))}
     </div>
   );
 }

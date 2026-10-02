@@ -2,7 +2,7 @@
 
 // Small pieces the staff screens share.
 
-import { ShieldCheck } from "lucide-react";
+import { BookOpen, CalendarDays, LayoutGrid, LockKeyhole, type LucideIcon, Megaphone, ScrollText, ShieldCheck, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { REVIEW_LABELS } from "../../_lib/constants";
 import { pesan } from "../../_lib/format";
@@ -13,6 +13,35 @@ import { Button, ConfirmSheet, Empty, Failed, Field, Sheet, Textarea, Toggle, to
 
 // staff_overview(): one number per queue or activity.
 export type Overview = Record<string, number>;
+
+// The console's sections, with what is waiting in each. Phones show the first STAFF_BAR of them in the bottom bar
+// and the rest under "Lainnya".
+export const STAFF_SECTIONS: { key: string; label: string; icon: LucideIcon; queue?: (o: Overview) => number }[] = [
+  { key: "ringkasan", label: "Ringkasan", icon: LayoutGrid },
+  { key: "verifikasi", label: "Verifikasi", icon: UserCheck, queue: (o) => o.graduates_pending },
+  { key: "moderasi", label: "Moderasi", icon: ShieldCheck, queue: (o) => o.businesses_pending + o.peluang_pending + o.promos_pending + o.reports_open },
+  { key: "acara", label: "Acara", icon: CalendarDays, queue: (o) => o.events_pending },
+  { key: "cerita", label: "Cerita", icon: BookOpen },
+  { key: "banner", label: "Banner", icon: Megaphone },
+  { key: "privasi", label: "Privasi", icon: LockKeyhole, queue: (o) => o.privacy_open },
+  { key: "audit", label: "Log audit", icon: ScrollText },
+];
+export const STAFF_BAR = 4;
+
+// The queue numbers, for the console page and for the phone bottom bar. staffChanged() makes both count again.
+// ponytail: each reader calls staff_overview itself; share one store if a third reader appears.
+export function useStaffOverview(on: boolean, key?: string) {
+  const overview = useQuery<Overview>(
+    on ? async () => supabase.rpc("staff_overview").then(({ data, error }) => ({ data: data as Overview | null, error })) : null,
+    [on, key],
+  );
+  useEffect(() => {
+    window.addEventListener("aw:staf", overview.reload);
+    return () => window.removeEventListener("aw:staf", overview.reload);
+  }, [overview.reload]);
+  return overview;
+}
+export const staffChanged = () => window.dispatchEvent(new Event("aw:staf"));
 
 export type Status = Enums<"review_status">;
 export type Person = { full_name: string; nickname: string | null; batch_lp?: number | null } | null;
@@ -93,13 +122,13 @@ export function AutoApprove({
   warning,
   onChanged,
 }: {
-  setting: "auto_approve" | "auto_approve_business" | "auto_approve_peluang";
+  setting: "auto_approve" | "auto_approve_business" | "auto_approve_peluang" | "auto_approve_promo";
   title: string;
   children: React.ReactNode;
   warning: React.ReactNode;
   onChanged: () => void;
 }) {
-  const settings = useQuery(() => supabase.from("settings").select("auto_approve, auto_approve_business, auto_approve_peluang").single(), []);
+  const settings = useQuery(() => supabase.from("settings").select("auto_approve, auto_approve_business, auto_approve_peluang, auto_approve_promo").single(), []);
   // The open "turn it on?" question. It is called with the answer, which the switch is waiting for.
   const [answer, setAnswer] = useState<((on: boolean) => void) | null>(null);
 

@@ -139,8 +139,9 @@ The browser only holds the anon key, so these rules live in the SQL file, not in
 - **Publishing needs two things**: the owner's consent (`submit_business`) and a moderator's approval (`moderate`).
   Status columns cannot be written directly; column grants leave them out. `moderate` also refuses to publish a
   listing, a Peluang or a hosted event while its owner is not a verified graduate. For a demo, staff can switch on
-  "Auto Approve Bisnis" and "Auto Approve Peluang" (Moderasi): what a verified graduate sends then goes live at
-  once, and the audit log says so.
+  "Auto Approve Bisnis", "Auto Approve Peluang" and "Auto Approve Promo" (Moderasi): what is sent then goes live
+  at once, and the audit log says so.
+- **Hubungkan is between two members**. The owner accepts or declines; staff take no part and cannot read requests.
 - **Banners are staff's**. Members cannot add, change or remove one. An ad is a banner staff tied to a business: it
   carries the label "Iklan", opens that business's page unless it has a link of its own, and is off the home page
   while the business is not public.

@@ -1,9 +1,9 @@
 "use client";
 
-// Dashboard: Hubungkan requests, both directions. The owner accepts, declines, or asks AsiaWorks for an introduction.
+// Dashboard: Hubungkan requests, both directions. The owner accepts or declines; staff take no part.
 // Contact details only show once a request is accepted (the database returns them only then).
 
-import { Check, Link2, UserRoundSearch, X } from "lucide-react";
+import { Check, Link2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { CONNECTION_LABELS } from "../../_lib/constants";
@@ -26,14 +26,14 @@ export function KoneksiTab() {
   const list = all.filter((c) => c.incoming === (box === "masuk"));
   const waiting = all.filter((c) => c.incoming && c.status === "pending").length;
 
-  const respond = async (id: string, action: "accept" | "decline" | "intro") => {
+  const respond = async (id: string, action: "accept" | "decline") => {
     setBusy(id + action);
     const { error } = await supabase.rpc("respond_connection", { p_id: id, p_action: action });
     setBusy(null);
     if (error) return toast(pesan(error), "error");
     window.dispatchEvent(new Event("aw:koneksi")); // the Koneksi badge re-counts (shell.tsx)
     toast(
-      { accept: "Diterima. Kontak kalian berdua sekarang saling terbuka.", decline: "Permintaan ditolak.", intro: "Staf AsiaWorks akan membantu memperkenalkan kalian." }[action],
+      { accept: "Diterima. Kontak kalian berdua sekarang saling terbuka.", decline: "Permintaan ditolak." }[action],
     );
     reload();
   };
@@ -132,11 +132,6 @@ export function KoneksiTab() {
                   <Button size="sm" variant="secondary" loading={busy === c.id + "decline"} onClick={() => respond(c.id, "decline")}>
                     <X className="h-4 w-4" /> Tolak
                   </Button>
-                  {c.status === "pending" && (
-                    <Button size="sm" variant="ghost" loading={busy === c.id + "intro"} onClick={() => respond(c.id, "intro")}>
-                      <UserRoundSearch className="h-4 w-4" /> Minta dikenalkan AsiaWorks
-                    </Button>
-                  )}
                 </div>
               )}
             </Card>
