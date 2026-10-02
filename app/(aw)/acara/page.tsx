@@ -63,7 +63,7 @@ export default function AcaraPage() {
   return (
     <>
       <PageHero
-        crumbs={[{ label: "Beranda", href: "/direktori" }, { label: "Acara" }]}
+        crumbs={[{ label: "Beranda", href: "/" }, { label: "Acara" }]}
         title="Agenda acara"
         accent="& temu lulusan."
         action={

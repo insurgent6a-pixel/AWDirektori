@@ -49,7 +49,7 @@ export default function AkunPage() {
   const status = profile.verification;
   return (
     <Container className="pt-5 pb-10 md:py-8">
-      <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: "Dasbor", href: "/akun" }, { label: LABELS[tab] }]} />
+      <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Dasbor", href: "/akun" }, { label: LABELS[tab] }]} />
 
       <header className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="h-section">Hai, {profile.nickname || profile.full_name || "lulusan"}</h1>

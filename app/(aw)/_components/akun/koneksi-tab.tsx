@@ -83,7 +83,7 @@ export function KoneksiTab() {
                     ) : c.business_id ? (
                       <>
                         Untuk{" "}
-                        <Link href={`/direktori/${c.business_id}`} className="tap -my-2.5 inline-block py-2.5 font-medium text-maroon hover:underline">
+                        <Link href={`/bisnis/${c.business_id}`} className="tap -my-2.5 inline-block py-2.5 font-medium text-maroon hover:underline">
                           {c.business_name}
                         </Link>
                       </>

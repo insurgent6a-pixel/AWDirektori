@@ -63,8 +63,8 @@ export default function BusinessPage() {
   if (!business) {
     return (
       <Container className="py-10">
-        <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: "Direktori", href: "/direktori" }, { label: "Tidak ditemukan" }]} />
-        <Empty icon={<Store className="h-6 w-6" />} title="Bisnis ini tidak ditemukan" action={<Button href="/direktori">Kembali ke direktori</Button>}>
+        <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Direktori", href: "/" }, { label: "Tidak ditemukan" }]} />
+        <Empty icon={<Store className="h-6 w-6" />} title="Bisnis ini tidak ditemukan" action={<Button href="/">Kembali ke direktori</Button>}>
           Mungkin sedang tidak tayang, atau tautannya sudah berubah.
         </Empty>
       </Container>
@@ -85,9 +85,9 @@ export default function BusinessPage() {
       <Container className="py-6 md:py-8">
         <Breadcrumbs
           items={[
-            { label: "Beranda", href: "/direktori" },
-            { label: "Direktori", href: "/direktori" },
-            { label: business.category, href: `/direktori?kategori=${encodeURIComponent(business.category)}` },
+            { label: "Beranda", href: "/" },
+            { label: "Direktori", href: "/" },
+            { label: business.category, href: `/?kategori=${encodeURIComponent(business.category)}` },
             { label: business.name },
           ]}
         />

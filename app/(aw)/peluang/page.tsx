@@ -54,7 +54,7 @@ export default function PeluangPage() {
   return (
     <>
       <PageHero
-        crumbs={[{ label: "Beranda", href: "/direktori" }, { label: "Peluang" }]}
+        crumbs={[{ label: "Beranda", href: "/" }, { label: "Peluang" }]}
         title={"Peluang kerja\u00a0sama"} // non-breaking: "kerja sama" stays on one line
         accent="antar lulusan."
         action={

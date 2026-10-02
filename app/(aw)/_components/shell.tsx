@@ -64,7 +64,7 @@ const SOCIAL = [
 ];
 
 export const NAV: NavItem[] = [
-  { href: "/direktori", label: "Direktori", icon: Compass },
+  { href: "/", label: "Direktori", icon: Compass },
   { href: "/peluang", label: "Peluang", icon: Handshake },
   { href: "/acara", label: "Acara", icon: CalendarDays },
   { href: "/lulusan", label: "Lulusan", icon: GraduationCap },
@@ -83,6 +83,9 @@ const DASHBOARD_NAV: (NavItem & { tab: DashboardTab })[] = [
 // Sign-in, sign-up and the staff console run without the public chrome.
 const isBare = (path: string) => ["/masuk", "/daftar", "/staff"].some((p) => path.startsWith(p));
 
+// The home is "/", which every path starts with: it is active on itself and on a business page.
+const isActive = (path: string, href: string) => (href === "/" ? path === "/" || path.startsWith("/bisnis") : path.startsWith(href));
+
 // Where "Pasang bisnis" leads: sign-up for a visitor, the new-business form in the dashboard for a member.
 export function usePasangBisnis() {
   const { user, isStaff } = useAuth();
@@ -98,7 +101,7 @@ export function Container({ className, children }: { className?: string; childre
 // The W's margins are measured on the Cinzel glyphs so both gaps (A–W, W–O) equal the gaps between the other letters.
 export function Wordmark({ dark = false }: { dark?: boolean }) {
   return (
-    <Link href="/direktori" className="tap inline-flex items-center hover:opacity-80" aria-label="AsiaWorks Direktori">
+    <Link href="/" className="tap inline-flex items-center hover:opacity-80" aria-label="AsiaWorks Direktori">
       <span className="font-brand inline-flex flex-col text-[17px] leading-none font-bold">
         <span className={cn("inline-flex items-baseline whitespace-nowrap", dark ? "text-white" : "text-ink")}>
           <span className="tracking-[0.16em]">ASIA</span>
@@ -131,7 +134,7 @@ export function Header() {
         {!isBare(path) && (
           <nav aria-label="Utama" className="hidden items-center gap-1 md:flex">
             {NAV.map((item) => {
-              const active = path.startsWith(item.href);
+              const active = isActive(path, item.href);
               return (
                 <Link
                   key={item.href}
@@ -228,7 +231,7 @@ export function BottomBar() {
         badge: item.tab === "koneksi" ? pending : undefined,
       }))
     : [
-        ...NAV.map((item) => ({ ...item, active: path.startsWith(item.href) })),
+        ...NAV.map((item) => ({ ...item, active: isActive(path, item.href) })),
         { ...home, icon: CircleUserRound, active: false },
       ];
 

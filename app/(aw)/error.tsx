@@ -20,7 +20,7 @@ export default function AwError({ error, reset }: { error: Error; reset: () => v
         action={
           <div className="flex flex-wrap justify-center gap-2">
             <Button onClick={reset}>Coba lagi</Button>
-            <Button href="/direktori" variant="secondary">
+            <Button href="/" variant="secondary">
               Ke Direktori
             </Button>
           </div>

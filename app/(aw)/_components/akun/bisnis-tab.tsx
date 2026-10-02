@@ -198,7 +198,7 @@ export function BisnisTab() {
                   Kelola
                 </Button>
                 {b.visible && (
-                  <Button size="sm" variant="secondary" href={`/direktori/${b.id}`}>
+                  <Button size="sm" variant="secondary" href={`/bisnis/${b.id}`}>
                     Lihat halaman
                   </Button>
                 )}

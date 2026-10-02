@@ -36,7 +36,7 @@ export function PerkNote({ perk, className }: { perk: string; className?: string
 
 // Grid card (Lulusan page, saved list).
 export function BusinessCard({ business, index }: { business: Business; index?: number }) {
-  const href = `/direktori/${business.id}`;
+  const href = `/bisnis/${business.id}`;
   return (
     <article
       className="rise lift relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-card"
@@ -94,7 +94,7 @@ export function BusinessRow({
 }) {
   return (
     <Link
-      href={`/direktori/${business.id}`}
+      href={`/bisnis/${business.id}`}
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cn(
@@ -153,7 +153,7 @@ export function PeluangCard({ peluang, index }: { peluang: Peluang; index?: numb
             <BadgeCheck className="h-4 w-4 shrink-0 text-maroon" aria-label="Lulusan terverifikasi" />
           </p>
           {peluang.business_id && peluang.business_name && (
-            <Link href={`/direktori/${peluang.business_id}`} className="tap-soft -my-2.5 block truncate py-2.5 text-[12px] text-ink-soft hover:text-maroon">
+            <Link href={`/bisnis/${peluang.business_id}`} className="tap-soft -my-2.5 block truncate py-2.5 text-[12px] text-ink-soft hover:text-maroon">
               {peluang.business_name}
             </Link>
           )}
@@ -289,11 +289,11 @@ export function StoryCard({ story, index }: { story: Story; index?: number }) {
         {/* Thumbs get a 40px row per name. The room is added to the row itself, not pulled in with a negative margin:
             when the two names wrap, pulled-in tap areas overlap and a tap on the first name opens the second. */}
         <p className="eyebrow pointer-coarse:-my-3">
-          <Link href={`/direktori/${story.business_a}`} className="tap inline-block hover:underline pointer-coarse:py-3">
+          <Link href={`/bisnis/${story.business_a}`} className="tap inline-block hover:underline pointer-coarse:py-3">
             {story.name_a}
           </Link>{" "}
           ×{" "}
-          <Link href={`/direktori/${story.business_b}`} className="tap inline-block hover:underline pointer-coarse:py-3">
+          <Link href={`/bisnis/${story.business_b}`} className="tap inline-block hover:underline pointer-coarse:py-3">
             {story.name_b}
           </Link>
         </p>

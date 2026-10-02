@@ -76,7 +76,7 @@ export default function StaffPage() {
 
   return (
     <Container className="py-5 md:py-8">
-      <Breadcrumbs items={[{ label: "Beranda", href: "/direktori" }, { label: "Staf", href: "/staff" }, { label: section.label }]} />
+      <Breadcrumbs items={[{ label: "Beranda", href: "/" }, { label: "Staf", href: "/staff" }, { label: section.label }]} />
 
       {/* minmax(0, 1fr): the tab strip scrolls sideways on phones instead of stretching the whole page. */}
       <div className="mt-4 grid grid-cols-[minmax(0,1fr)] items-start gap-6 md:grid-cols-[13rem_minmax(0,1fr)]">
