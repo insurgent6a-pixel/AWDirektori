@@ -31,7 +31,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BusinessRow, EventCard, PeluangCard } from "./_components/cards";
 import MapView from "./_components/map";
 import { Breadcrumbs, Container, usePasangBisnis } from "./_components/shell";
-import { Badge, Button, Card, Chip, Failed, IconButton, Media, Select, Sheet, Skeleton, Tabs, toast } from "./_components/ui";
+import { Badge, Button, Card, Chip, Failed, IconButton, Media, Select, Skeleton, Tabs, toast } from "./_components/ui";
 import { useAuth } from "./_lib/auth";
 import { AREAS, areaMatches, CATEGORIES, LUAR_JABODETABEK, SERVICE_TYPES } from "./_lib/constants";
 import { cn, scrollBehavior } from "./_lib/format";
@@ -83,7 +83,6 @@ export default function DirektoriPage() {
   const [radius, setRadius] = useState(25);
   const [view, setView] = useState<"daftar" | "peta">("daftar");
   const [active, setActive] = useState<string | null>(null);
-  const [howItWorks, setHowItWorks] = useState(false);
 
   // The whole directory once (counts, industries, cities, perks), then a filtered search only when a filter is on.
   const all = useQuery(() => searchBusinesses(), []);
@@ -488,36 +487,10 @@ export default function DirektoriPage() {
             <Button href={pasangBisnis} size="lg">
               <Store className="h-4 w-4" /> Pasang bisnis
             </Button>
-            <Button variant="secondary" size="lg" onClick={() => setHowItWorks(true)}>
-              Cara kerja verifikasi
-            </Button>
           </div>
           <p className="mt-4 text-[12px] text-ink-soft">Khusus lulusan AsiaWorks: Basic, Advanced, dan Leadership Program.</p>
         </Container>
       </section>
-
-      <Sheet open={howItWorks} onClose={() => setHowItWorks(false)} title="Cara kerja verifikasi">
-        <ol className="space-y-4 pb-1">
-          {[
-            ["Daftar", "Buat akun dengan nama, email, dan kata sandi."],
-            ["Isi data lulusan", "Siapa kamu dan angkatan berapa. Boleh berhenti dan lanjut lagi nanti."],
-            ["Staf memverifikasi", "Staf AsiaWorks mencocokkan angkatanmu. Status lulusan hanya datang dari persetujuan staf."],
-            ["Pasang bisnis", "Isi profil bisnis dan taruh pin lokasinya di peta. Langkah ini opsional."],
-            ["Tayang", "Kirim untuk ditinjau. Begitu staf menyetujui, bisnismu muncul di direktori."],
-          ].map(([title, text], i) => (
-            <li key={title} className="flex gap-3.5">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blush text-[13px] font-semibold text-maroon">{i + 1}</span>
-              <span>
-                <b className="block text-sm font-semibold">{title}</b>
-                <span className="body-copy text-sm">{text}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-        <Button href={pasangBisnis} size="lg" full className="mt-5">
-          {user ? "Pasang bisnis" : "Mulai daftar"}
-        </Button>
-      </Sheet>
     </>
   );
 }
