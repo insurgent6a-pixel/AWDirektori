@@ -13,21 +13,22 @@ const PASSWORD = 'asiaworks123';
 // key = the email name. lp = sends the onboarding form for verification. verify: false = left waiting for staff.
 const PEOPLE = [
   { key: 'staf', name: 'Tim AsiaWorks' },
-  { key: 'lulusan', name: 'Dimas Prasetyo', nick: 'Dimas', phone: '0812-0000-0101', lp: 188, ib: 352, ia: 349 },
-  { key: 'reza', name: 'Reza Mahendra', nick: 'Reza', phone: '0812-0000-0102', lp: 162 },
-  { key: 'yoga', name: 'Yoga Pratama', nick: 'Yoga', phone: '0812-0000-0103', lp: 201, ib: 378, ia: 374 },
-  { key: 'fitri', name: 'Fitri Handayani', nick: 'Fitri', phone: '0812-0000-0104', lp: 175 },
-  { key: 'fadli', name: 'Andi Fadli Rahman', nick: 'Fadli', phone: '0812-0000-0105', lp: 170, ib: 318, ia: 315 },
-  { key: 'rahma', name: 'Sitti Rahmawati', nick: 'Rahma', phone: '0812-0000-0106', lp: 193 },
-  { key: 'tania', name: 'Tania Gunawan', nick: 'Tania', phone: '0812-0000-0107', lp: 205, ib: 386, ia: 381 },
-  { key: 'kevin', name: 'Kevin Hartono', nick: 'Kevin', phone: '0812-0000-0108', lp: 181 },
-  { key: 'mitha', name: 'Paramitha Kusumaningrum', nick: 'Mitha', phone: '0812-0000-0109', lp: 156, ib: 290, ia: 287 },
-  { key: 'made', name: 'I Made Wirawan', nick: 'Made', phone: '0812-0000-0110', lp: 197 },
-  { key: 'hendra', name: 'Hendra Sitompul', nick: 'Hendra', phone: '0812-0000-0111', lp: 150, ib: 279, ia: 276 },
-  { key: 'irfan', name: 'Muhammad Irfan Syam', nick: 'Irfan', phone: '0812-0000-0112', lp: 184 },
-  { key: 'rini', name: 'Rini Wulandari', nick: 'Rini', phone: '0812-0000-0113', lp: 209 },
-  { key: 'nadia', name: 'Nadia Kusumawardhani', nick: 'Nadia', phone: '0812-0000-0114', lp: 212, ib: 399, ia: 395 },
-  { key: 'bayu', name: 'Bayu Nugroho', nick: 'Bayu', phone: '0812-0000-0115', lp: 215, verify: false },
+  // Batch numbers stay at or under the latest real ones: LP 200, IA 204, IB 210.
+  { key: 'lulusan', name: 'Dimas Prasetyo', nick: 'Dimas', phone: '0812-0000-0101', lp: 173, ib: 181, ia: 176 },
+  { key: 'reza', name: 'Reza Mahendra', nick: 'Reza', phone: '0812-0000-0102', lp: 147 },
+  { key: 'yoga', name: 'Yoga Pratama', nick: 'Yoga', phone: '0812-0000-0103', lp: 186, ib: 194, ia: 189 },
+  { key: 'fitri', name: 'Fitri Handayani', nick: 'Fitri', phone: '0812-0000-0104', lp: 160 },
+  { key: 'fadli', name: 'Andi Fadli Rahman', nick: 'Fadli', phone: '0812-0000-0105', lp: 155, ib: 163, ia: 158 },
+  { key: 'rahma', name: 'Sitti Rahmawati', nick: 'Rahma', phone: '0812-0000-0106', lp: 178 },
+  { key: 'tania', name: 'Tania Gunawan', nick: 'Tania', phone: '0812-0000-0107', lp: 190, ib: 198, ia: 193 },
+  { key: 'kevin', name: 'Kevin Hartono', nick: 'Kevin', phone: '0812-0000-0108', lp: 166 },
+  { key: 'mitha', name: 'Paramitha Kusumaningrum', nick: 'Mitha', phone: '0812-0000-0109', lp: 141, ib: 149, ia: 144 },
+  { key: 'made', name: 'I Made Wirawan', nick: 'Made', phone: '0812-0000-0110', lp: 182 },
+  { key: 'hendra', name: 'Hendra Sitompul', nick: 'Hendra', phone: '0812-0000-0111', lp: 135, ib: 143, ia: 138 },
+  { key: 'irfan', name: 'Muhammad Irfan Syam', nick: 'Irfan', phone: '0812-0000-0112', lp: 169 },
+  { key: 'rini', name: 'Rini Wulandari', nick: 'Rini', phone: '0812-0000-0113', lp: 194 },
+  { key: 'nadia', name: 'Nadia Kusumawardhani', nick: 'Nadia', phone: '0812-0000-0114', lp: 197, ib: 205, ia: 200 },
+  { key: 'bayu', name: 'Bayu Nugroho', nick: 'Bayu', phone: '0812-0000-0115', lp: 200, verify: false },
   { key: 'sekar', name: 'Sekar Ayuningtyas' }, // only signed up
 ];
 
