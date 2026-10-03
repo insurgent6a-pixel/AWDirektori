@@ -13,7 +13,6 @@ const QUEUES: [key: string, label: string, tab: string][] = [
   ["peluang_pending", "Peluang menunggu tinjauan", "moderasi&antrean=peluang"],
   ["promos_pending", "Promo menunggu tinjauan", "moderasi&antrean=promo"],
   ["reports_open", "Laporan dari anggota", "moderasi&antrean=laporan"],
-  ["intros", "Permintaan perkenalan", "moderasi&antrean=perkenalan"],
   ["events_pending", "Usulan acara", "acara"],
   ["privacy_open", "Permintaan privasi", "privasi"],
 ];

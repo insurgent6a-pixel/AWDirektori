@@ -42,6 +42,13 @@ export type Database = {
             foreignKeyName: "audit_log_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -87,6 +94,13 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "banners_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -164,6 +178,13 @@ export type Database = {
             foreignKeyName: "businesses_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -215,6 +236,13 @@ export type Database = {
             foreignKeyName: "connections_from_id_fkey"
             columns: ["from_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_from_id_fkey"
+            columns: ["from_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -230,6 +258,13 @@ export type Database = {
             columns: ["peluang_id"]
             isOneToOne: false
             referencedRelation: "peluang_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_to_id_fkey"
+            columns: ["to_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -263,6 +298,13 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -327,6 +369,13 @@ export type Database = {
           venue?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_host_id_fkey"
             columns: ["host_id"]
@@ -413,6 +462,13 @@ export type Database = {
             foreignKeyName: "payments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -473,6 +529,13 @@ export type Database = {
             foreignKeyName: "peluang_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "peluang_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -508,7 +571,21 @@ export type Database = {
             foreignKeyName: "privacy_requests_handled_by_fkey"
             columns: ["handled_by"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_requests_handled_by_fkey"
+            columns: ["handled_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -663,7 +740,21 @@ export type Database = {
             foreignKeyName: "reports_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -707,6 +798,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -766,6 +864,13 @@ export type Database = {
             foreignKeyName: "saves_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saves_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -776,18 +881,21 @@ export type Database = {
           auto_approve: boolean
           auto_approve_business: boolean
           auto_approve_peluang: boolean
+          auto_approve_promo: boolean
           id: boolean
         }
         Insert: {
           auto_approve?: boolean
           auto_approve_business?: boolean
           auto_approve_peluang?: boolean
+          auto_approve_promo?: boolean
           id?: boolean
         }
         Update: {
           auto_approve?: boolean
           auto_approve_business?: boolean
           auto_approve_peluang?: boolean
+          auto_approve_promo?: boolean
           id?: boolean
         }
         Relationships: []
@@ -851,6 +959,13 @@ export type Database = {
             foreignKeyName: "stories_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "graduate_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -898,6 +1013,36 @@ export type Database = {
         }
         Relationships: []
       }
+      graduate_feed: {
+        Row: {
+          batch_ia: number | null
+          batch_ib: number | null
+          batch_lp: number | null
+          full_name: string | null
+          id: string | null
+          nickname: string | null
+          programs: string[] | null
+        }
+        Insert: {
+          batch_ia?: number | null
+          batch_ib?: number | null
+          batch_lp?: number | null
+          full_name?: string | null
+          id?: string | null
+          nickname?: string | null
+          programs?: string[] | null
+        }
+        Update: {
+          batch_ia?: number | null
+          batch_ib?: number | null
+          batch_lp?: number | null
+          full_name?: string | null
+          id?: string | null
+          nickname?: string | null
+          programs?: string[] | null
+        }
+        Relationships: []
+      }
       peluang_feed: {
         Row: {
           area: string | null
@@ -920,6 +1065,13 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "peluang_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "graduate_feed"
             referencedColumns: ["id"]
           },
           {
@@ -1091,6 +1243,7 @@ export type Database = {
       set_auto_approve: { Args: { p_on: boolean }; Returns: undefined }
       set_auto_approve_business: { Args: { p_on: boolean }; Returns: undefined }
       set_auto_approve_peluang: { Args: { p_on: boolean }; Returns: undefined }
+      set_auto_approve_promo: { Args: { p_on: boolean }; Returns: undefined }
       set_business_contact: {
         Args: { p_business: string; p_contact: string }
         Returns: undefined

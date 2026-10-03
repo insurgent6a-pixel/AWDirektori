@@ -12,7 +12,7 @@ import { useQuery } from "../../_lib/hooks";
 import { supabase } from "../../_lib/supabase";
 import type { Enums } from "../../_lib/types";
 import { Badge, Card, Chip, Failed, Media, Skeleton, toast, useKeepInView } from "../ui";
-import { LaporanQueue, PeluangQueue, PerkenalanQueue, PromoQueue } from "./moderasi-antrean";
+import { LaporanQueue, PeluangQueue, PromoQueue } from "./moderasi-antrean";
 import { AutoApprove, Decide, type Overview, type Person, personLabel, QueueEmpty, ReviewNote, SectionTitle, type Status, StatusFilter } from "./shared";
 
 const QUEUES = [
@@ -20,7 +20,6 @@ const QUEUES = [
   ["peluang", "Peluang", "peluang_pending"],
   ["promo", "Promo", "promos_pending"],
   ["laporan", "Laporan", "reports_open"],
-  ["perkenalan", "Perkenalan", "intros"],
 ] as const;
 
 export function Moderasi({ overview, onChanged }: { overview: Overview | null; onChanged: () => void }) {
@@ -45,7 +44,6 @@ export function Moderasi({ overview, onChanged }: { overview: Overview | null; o
         {queue === "peluang" && <PeluangQueue onChanged={onChanged} />}
         {queue === "promo" && <PromoQueue onChanged={onChanged} />}
         {queue === "laporan" && <LaporanQueue onChanged={onChanged} />}
-        {queue === "perkenalan" && <PerkenalanQueue onChanged={onChanged} />}
       </div>
     </section>
   );

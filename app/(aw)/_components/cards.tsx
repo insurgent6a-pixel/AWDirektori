@@ -6,10 +6,14 @@ import { BadgeCheck, CalendarClock, Clock, MapPin, Tag, UserRound, Users } from 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { EVENT_KINDS, PELUANG_KINDS, SERVICE_TYPES } from "../_lib/constants";
-import { batchLabel, bulanPendek, cn, hari, jam, jarak, sisaHari, tanggalPendek } from "../_lib/format";
-import type { Business, EventItem, Peluang, Story } from "../_lib/types";
+import { useAuth } from "../_lib/auth";
+import { batchLabel, bulanPendek, cn, hari, jam, jarak, programLabels, sisaHari, tanggalPendek } from "../_lib/format";
+import { useQuery } from "../_lib/hooks";
+import { peluangFeed, searchBusinesses } from "../_lib/queries";
+import { supabase } from "../_lib/supabase";
+import type { Business, EventItem, Graduate, Peluang, Story } from "../_lib/types";
 import { ConnectButton, ReportButton, RsvpButton, SaveButton } from "./actions";
-import { Avatar, Badge, Button, Media } from "./ui";
+import { Avatar, Badge, Button, Failed, Media, Sheet, Skeleton } from "./ui";
 
 // Entrance delay for item n of a list, capped so a long list does not keep its last cards waiting.
 export const stagger = (index = 0) => ({ "--i": Math.min(index, 12) }) as React.CSSProperties;
@@ -62,11 +66,12 @@ export function BusinessCard({ business, index }: { business: Business; index?: 
             {business.name}
           </Link>
         </h3>
-        <p className="mt-1 flex items-center gap-1.5 text-[13px]">
-          <span className="font-semibold text-maroon">{business.owner_name}</span>
+        {/* a div, not a p: the name carries its sheet, and a dialog cannot sit inside a paragraph */}
+        <div className="mt-1 flex items-center gap-1.5 text-[13px]">
+          <OwnerName id={business.owner_id} name={business.owner_name} businessId={business.id} className="text-maroon" />
           <BadgeCheck className="h-4 w-4 text-maroon" aria-label="Lulusan terverifikasi" />
           {business.service_type && <span className="text-ink-soft">· {SERVICE_TYPES[business.service_type]}</span>}
-        </p>
+        </div>
         <p className="body-copy mt-2 line-clamp-3 text-[13px]">{business.description}</p>
         {business.perk && <PerkNote perk={business.perk} className="mt-3" />}
         <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
@@ -128,6 +133,130 @@ export function BusinessRow({
   );
 }
 
+// ── Lulusan ─────────────────────────────────────────────────────────
+
+// The person behind a card. A tap on the name opens them in a sheet: programs, every live business, open Peluang.
+// businessId / peluangId: the card the name sits on, which is what Hubungkan in the sheet is about.
+export function OwnerName({
+  id,
+  name,
+  businessId,
+  peluangId,
+  className,
+}: {
+  id: string;
+  name: string;
+  businessId?: string;
+  peluangId?: string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        className={cn("tap -my-2.5 min-w-0 py-2.5 text-left font-semibold underline-offset-4 hover:underline", className)}
+      >
+        {name}
+      </button>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Profil lulusan">
+        <OwnerProfile id={id} name={name} businessId={businessId} peluangId={peluangId} onLeave={() => setOpen(false)} />
+      </Sheet>
+    </>
+  );
+}
+
+function OwnerProfile({
+  id,
+  name,
+  businessId,
+  peluangId,
+  onLeave,
+}: {
+  id: string;
+  name: string;
+  businessId?: string;
+  peluangId?: string;
+  onLeave: () => void;
+}) {
+  const { isStaff } = useAuth();
+  // graduate_feed is public and only holds people who already show a business or a Peluang.
+  const person = useQuery<Graduate>(
+    () => supabase.from("graduate_feed").select("*").eq("id", id).maybeSingle().overrideTypes<Graduate, { merge: false }>(),
+    [id],
+  );
+  // ponytail: the whole directory (one page of 200) filtered here. Give search_businesses an owner filter beyond that.
+  const directory = useQuery(() => searchBusinesses(), []);
+  const peluang = useQuery(() => peluangFeed(id), [id]);
+  const businesses = directory.data?.filter((b) => b.owner_id === id) ?? [];
+  const fullName = person.data?.full_name || name;
+  const nickname = person.data?.nickname;
+
+  return (
+    <div className="pb-1">
+      <div className="flex items-center gap-3.5">
+        <Avatar name={fullName} className="h-14 w-14 text-lg" />
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-lg leading-snug font-semibold tracking-tight">
+            <span className="truncate">{fullName}</span>
+            <BadgeCheck className="h-[18px] w-[18px] shrink-0 text-maroon" aria-label="Lulusan terverifikasi" />
+          </p>
+          {nickname && nickname !== fullName && <p className="text-[13px] text-ink-soft">Biasa dipanggil {nickname}</p>}
+          {person.data && (
+            <p className="mt-1.5 flex flex-wrap gap-1.5">
+              {programLabels(person.data).map((label) => (
+                <Badge key={label} tone={label.startsWith("LP") ? "maroon" : "gray"}>
+                  {label}
+                </Badge>
+              ))}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* A tap on a row leaves for that page; the sheet closes too, for when it is the page already open. */}
+      <div className="mt-5 space-y-5" onClick={(e) => (e.target as HTMLElement).closest("a") && onLeave()}>
+        <section>
+          <h3 className="text-[13px] font-semibold">Bisnis{businesses.length > 1 ? ` (${businesses.length})` : ""}</h3>
+          <div className="mt-2 space-y-2">
+            <Failed query={directory} />
+            {directory.loading ? (
+              <Skeleton className="h-24" />
+            ) : businesses.length ? (
+              businesses.map((b) => <BusinessRow key={b.id} business={b} />)
+            ) : (
+              !directory.error && <p className="text-[13px] text-ink-soft">Belum ada bisnis yang tayang.</p>
+            )}
+          </div>
+        </section>
+
+        {!!peluang.data?.length && (
+          <section>
+            <h3 className="text-[13px] font-semibold">Peluang terbuka</h3>
+            <div className="mt-2 space-y-2">
+              {peluang.data.map((p) => (
+                <Link key={p.id} href="/peluang" className="tap-soft block rounded-xl border border-line p-3 hover:bg-page">
+                  <p className="truncate text-sm font-semibold">{p.title}</p>
+                  <p className="truncate text-[12px] text-ink-soft">
+                    Mencari {PELUANG_KINDS[p.kind].toLowerCase()}
+                    {p.deadline ? `, sampai ${tanggalPendek(p.deadline)}` : ""}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {!isStaff && (businessId || peluangId) && (
+        <ConnectButton businessId={businessId} peluangId={peluangId} ownerId={id} targetName={nickname || name} size="lg" full className="mt-5" />
+      )}
+    </div>
+  );
+}
+
 // ── Peluang ─────────────────────────────────────────────────────────
 
 export function PeluangCard({ peluang, index }: { peluang: Peluang; index?: number }) {
@@ -147,11 +276,11 @@ export function PeluangCard({ peluang, index }: { peluang: Peluang; index?: numb
       <div className="mt-3 flex items-center gap-3 rounded-xl bg-page p-2.5">
         <Avatar name={peluang.owner_name} />
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-sm font-semibold">
-            <span className="truncate">{peluang.owner_name}</span>
+          <div className="flex items-center gap-1.5 text-sm font-semibold">
+            <OwnerName id={peluang.owner_id} name={peluang.owner_name} peluangId={peluang.id} className="truncate hover:text-maroon" />
             {peluang.batch_lp && <Badge>LP {peluang.batch_lp}</Badge>}
             <BadgeCheck className="h-4 w-4 shrink-0 text-maroon" aria-label="Lulusan terverifikasi" />
-          </p>
+          </div>
           {peluang.business_id && peluang.business_name && (
             <Link href={`/bisnis/${peluang.business_id}`} className="tap-soft -my-2.5 block truncate py-2.5 text-[12px] text-ink-soft hover:text-maroon">
               {peluang.business_name}

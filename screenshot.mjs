@@ -1,4 +1,4 @@
-// node screenshot.mjs <url> [label] [--mobile] [--viewport] [--login=email:password] [--wait=ms] [--width=px]
+// node screenshot.mjs <url> [label] [--mobile] [--viewport] [--login=email:password] [--wait=ms] [--width=px] [--hide=selector]
 // Saves ./temporary screenshots/screenshot-N[-label].png (auto-incremented, never overwritten).
 // Full page by default; --viewport captures only the first screen. --mobile uses a 390px phone viewport.
 // --login signs in at /masuk first (or /staff with --staff) so signed-in pages can be captured.
@@ -56,6 +56,7 @@ if (!browser) {
 }
 try {
   const page = await browser.newPage();
+  if (flags.tz) await page.emulateTimezone(String(flags.tz)); // --tz=Asia/Jakarta: times as a visitor there sees them
   const mobile = !!flags.mobile;
   await page.setViewport(
     mobile
@@ -83,6 +84,8 @@ try {
   await new Promise((r) => setTimeout(r, Number(flags.wait) || 1200));
   // A full-page capture resizes the viewport, which would replay entrance animations mid-shot. Freeze them first.
   await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important}" });
+  // --hide=<css selector>: leaves something out of the shot, such as the sticky bottom bar in a full-page capture.
+  if (flags.hide) await page.addStyleTag({ content: `${flags.hide}{display:none!important}` });
   await page.screenshot({ path: file, fullPage: !flags.viewport });
   console.log(file);
 } finally {
