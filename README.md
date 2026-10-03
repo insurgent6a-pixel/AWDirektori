@@ -125,6 +125,7 @@ supabase/
 scripts/
   check.mjs             proves the rules below through the real API (npm run check)
   seed.mjs              demo data through the real flows (npm run seed)
+  import.mjs            the Expo Google Form's answers (CSV) into accounts and listings; prints the plan unless --write
 serve.mjs, screenshot.mjs              design workflow: dev server on :3000 and page screenshots
 ```
 
