@@ -225,7 +225,7 @@ function PeluangForm({ row, onDone }: { row: Row | null; onDone: () => void }) {
       )}
       {error && <Notice>{error}</Notice>}
       <Button type="submit" size="lg" full loading={busy}>
-        {row ? "Simpan perubahan" : "Kirim untuk ditinjau"}
+        {row ? "Simpan perubahan" : "Kirim"}
       </Button>
     </form>
   );

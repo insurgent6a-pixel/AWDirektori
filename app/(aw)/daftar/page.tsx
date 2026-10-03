@@ -433,7 +433,7 @@ function Selesai({ approved, madeBusiness, returning }: { approved: boolean; mad
       {madeBusiness && (
         <p className="mt-4 flex items-start gap-3 rounded-xl bg-page p-4 text-left text-sm">
           <Store className="mt-0.5 h-4 w-4 shrink-0 text-maroon" />
-          <span>Bisnismu tersimpan sebagai draf. Tambahkan foto dan pin lokasi di dasbor, lalu kirim untuk ditinjau.</span>
+          <span>Bisnismu tersimpan sebagai draf. Tambahkan foto dan pin lokasi di dasbor, lalu kirim.</span>
         </p>
       )}
       <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">

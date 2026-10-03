@@ -69,7 +69,7 @@ export function BisnisTab() {
             onSaved={(id) => {
               list.reload();
               setEditing(id);
-              toast("Tersimpan sebagai draf. Tambahkan lokasi, lalu kirim untuk ditinjau.");
+              toast("Tersimpan sebagai draf. Tambahkan lokasi, lalu kirim.");
             }}
           />
         </Card>
@@ -300,14 +300,14 @@ function PublishCard({ business, onChanged }: { business: Biz; onChanged: () => 
       {(status === "draft" || status === "rejected") && (
         <div className="mt-4 space-y-3">
           {status === "rejected" && <Notice>Staf meminta perbaikan{business.review_note ? `: ${business.review_note}` : "."}</Notice>}
-          <p className="text-[13px] text-ink-soft">Lengkapi profil, kontak, dan lokasi (atau pilih Online saja), lalu kirim untuk ditinjau staf.</p>
+          <p className="text-[13px] text-ink-soft">Lengkapi profil, kontak, dan lokasi (atau pilih Online saja), lalu kirim.</p>
           <label className="flex items-start gap-3 text-sm">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-maroon" />
             Saya setuju bisnis ini ditampilkan untuk publik di direktori.
           </label>
           {error && <Notice>{error}</Notice>}
           <Button full loading={busy} disabled={!agree} onClick={submit}>
-            Kirim untuk ditinjau
+            Kirim
           </Button>
         </div>
       )}
