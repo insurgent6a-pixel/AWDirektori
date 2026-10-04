@@ -70,7 +70,7 @@ export default function LulusanPage() {
             <Stat label="Bisnis tayang" value={stats?.length} />
             <Stat label="Kota" value={stats && new Set(stats.flatMap((b) => b.locations.map((l) => l.city))).size} />
             <Stat label="Lulusan" value={stats && new Set(stats.map((b) => b.owner_id)).size} />
-            <Stat label="GLP Perk aktif" value={stats?.filter((b) => b.perk).length} accent />
+            <Stat label="GLP Promo aktif" value={stats?.filter((b) => b.perk).length} accent />
           </dl>
         }
       >
@@ -104,7 +104,7 @@ export default function LulusanPage() {
               (promoOnly ? "border-gold bg-gold text-white" : "border-blush-line bg-blush text-maroon hover:border-maroon/40")
             }
           >
-            <Tag className="h-4 w-4" /> GLP Perk saja
+            <Tag className="h-4 w-4" /> GLP Promo saja
           </button>
         </Card>
 
@@ -114,7 +114,7 @@ export default function LulusanPage() {
             {term && <Active onRemove={() => setQ("")}>“{term}”</Active>}
             {category && <Active onRemove={() => setFilter({ kategori: null })}>{category}</Active>}
             {area && <Active onRemove={() => setFilter({ area: null })}>{area}</Active>}
-            {promoOnly && <Active onRemove={() => setFilter({ promo: null })}>GLP Perk</Active>}
+            {promoOnly && <Active onRemove={() => setFilter({ promo: null })}>GLP Promo</Active>}
             <button type="button" onClick={reset} className="tap shrink-0 py-2.5 text-[13px] font-semibold text-maroon underline-offset-4 hover:underline">
               Hapus semua
             </button>

@@ -30,7 +30,7 @@ export function PerkNote({ perk, className }: { perk: string; className?: string
     <p className={cn("flex items-start gap-2 rounded-xl bg-gold-soft px-3 py-2 text-[12px] leading-snug", className)}>
       <Tag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
       <span>
-        <b className="font-semibold text-gold">GLP Perk:</b> {perk}
+        <b className="font-semibold text-gold">GLP Promo:</b> {perk}
       </span>
     </p>
   );

@@ -12,7 +12,6 @@ import {
   GraduationCap,
   Handshake,
   HeartPulse,
-  LocateFixed,
   type LucideIcon,
   Palette,
   Plane,
@@ -33,11 +32,11 @@ import MapView from "./_components/map";
 import { Breadcrumbs, Container, usePasangBisnis } from "./_components/shell";
 import { Badge, Button, Card, Chip, Failed, IconButton, Media, Select, Skeleton, Tabs, toast } from "./_components/ui";
 import { useAuth } from "./_lib/auth";
-import { AREAS, areaMatches, CATEGORIES, LUAR_JABODETABEK, SERVICE_TYPES } from "./_lib/constants";
+import { AREAS, areaMatches, CATEGORIES, LUAR_JABODETABEK } from "./_lib/constants";
 import { cn, scrollBehavior } from "./_lib/format";
 import { useQuery, useUrlFilters } from "./_lib/hooks";
 import { bannerFeed, eventFeed, myRsvps, peluangFeed, searchBusinesses } from "./_lib/queries";
-import type { Banner, Business, Enums } from "./_lib/types";
+import type { Banner, Business } from "./_lib/types";
 
 const SHORTCUTS: { href: string; label: string; icon: LucideIcon; gold?: boolean }[] = [
   { href: "#jelajah", label: "Jelajahi bisnis", icon: Store },
@@ -61,7 +60,6 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 };
 
 const MAIN_AREAS = ["Jabodetabek", "Makassar", LUAR_JABODETABEK];
-const RADII = [5, 10, 25, 50];
 const PHONE_ROWS = 3; // phones list this many businesses and offer the rest; a desktop list scrolls beside the map
 const NONE: Business[] = [];
 const inArea = (b: Business, area: string) => b.locations.some((l) => areaMatches(area, l.area));
@@ -76,23 +74,19 @@ export default function DirektoriPage() {
   const category = params.get("kategori") ?? "";
   const area = params.get("area") ?? "";
   const city = params.get("kota") ?? "";
-  const service = (params.get("jenis") ?? "") as Enums<"service_type"> | "";
   const promoOnly = params.get("promo") === "1";
 
-  const [near, setNear] = useState<{ lat: number; lng: number } | null>(null);
-  const [radius, setRadius] = useState(25);
   const [view, setView] = useState<"daftar" | "peta">("daftar");
   const [active, setActive] = useState<string | null>(null);
 
   // The whole directory once (counts, industries, cities, perks), then a filtered search only when a filter is on.
   const all = useQuery(() => searchBusinesses(), []);
-  const filtered = !!(term || category || area || city || service || promoOnly || near);
+  const filtered = !!(term || category || area || city || promoOnly);
   const search = useQuery(
     filtered
-      ? () =>
-          searchBusinesses({ q: term, category, area, city, service: service || undefined, promoOnly, near: near ? { ...near, radiusKm: radius } : undefined })
+      ? () => searchBusinesses({ q: term, category, area, city, promoOnly })
       : null,
-    [term, category, area, city, service, promoOnly, near, radius, filtered],
+    [term, category, area, city, promoOnly, filtered],
   );
   // While a new filter's first answer is on its way the map keeps the pins it had (the list shows skeletons), so it
   // does not zoom out to all of Indonesia and back.
@@ -101,7 +95,7 @@ export default function DirektoriPage() {
   const failed = !!(all.error || search.error);
   // The search whose full list a phone has opened. A new search starts short again. Kept for the browser session, so
   // Back from a business page finds the list the way it was left.
-  const listKey = [term, category, area, city, service, promoOnly, near?.lat, near?.lng, radius].join("|");
+  const listKey = [term, category, area, city, promoOnly].join("|");
   const [opened, setOpened] = useState<string | null>(null);
   useEffect(() => {
     try {
@@ -147,24 +141,8 @@ export default function DirektoriPage() {
   }, [directory]);
   const perks = directory.filter((b) => b.perk);
 
-  const [locating, setLocating] = useState(false); // a phone can take seconds to find itself: say so on the chip
-  const locate = () => {
-    if (near) return setNear(null);
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        setLocating(false);
-        setNear({ lat: coords.latitude, lng: coords.longitude });
-      },
-      () => {
-        setLocating(false);
-        toast("Lokasi belum bisa dibaca. Izinkan akses lokasi di browser dulu ya.", "error");
-      },
-    );
-  };
   const reset = () => {
     setQ("");
-    setNear(null);
     router.replace("/", { scroll: false });
   };
   const selectPin = (id: string) => {
@@ -204,12 +182,15 @@ export default function DirektoriPage() {
             </ul>
           </nav>
 
-          <p className="mt-8 flex items-center gap-2 text-[13px] font-semibold text-maroon">
-            <Sparkle className="h-4 w-4 fill-current" />
-            {profile?.nickname ? `Hai, ${profile.nickname}! Mau cari apa hari ini?` : "Direktori lulusan AsiaWorks"}
-          </p>
+          {/* A greeting for a member who is signed in. A visitor goes straight to the headline. */}
+          {profile?.nickname && (
+            <p className="mt-8 flex items-center gap-2 text-[13px] font-semibold text-maroon">
+              <Sparkle className="h-4 w-4 fill-current" />
+              Hai, {profile.nickname}! Mau cari apa hari ini?
+            </p>
+          )}
           {/* Smaller than the other pages' headlines: one line on desktop, as in the reference. */}
-          <h1 className="h-display mt-2 text-[length:clamp(1.75rem,0.9rem+2vw,2.5rem)]">
+          <h1 className={cn("h-display text-[length:clamp(1.75rem,0.9rem+2vw,2.5rem)]", profile?.nickname ? "mt-2" : "mt-8")}>
             Temukan mitra bisnis di antara <span className="accent squiggle">lulusan AsiaWorks.</span>
           </h1>
 
@@ -245,9 +226,6 @@ export default function DirektoriPage() {
       <Container className="py-6">
         <section id="jelajah" className="scroll-mt-20">
           <div className="no-scrollbar -mx-4 -my-1.5 flex gap-2 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:flex-wrap sm:px-0">
-            <Chip active={!!near} disabled={locating} onClick={locate}>
-              <LocateFixed className="h-3.5 w-3.5" /> {locating ? "Mencari..." : "Dekat saya"}
-            </Chip>
             <Chip active={!area} onClick={() => setFilter({ area: null })}>
               Semua wilayah <Count n={directory.length} />
             </Chip>
@@ -258,18 +236,7 @@ export default function DirektoriPage() {
             ))}
           </div>
 
-          {near && (
-            <div className="rise mt-3 flex flex-wrap items-center gap-2 text-[13px]">
-              <span className="text-ink-soft">Dalam radius</span>
-              {RADII.map((km) => (
-                <Chip key={km} active={radius === km} onClick={() => setRadius(km)}>
-                  {km} km
-                </Chip>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-[1fr_1fr_1fr_auto]">
+          <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-[1fr_1fr_auto]">
             <Select
               compact
               value={MAIN_AREAS.includes(area) ? "" : area}
@@ -287,21 +254,16 @@ export default function DirektoriPage() {
                 <option key={c}>{c}</option>
               ))}
             </Select>
-            <Select compact value={service} onChange={(e) => setFilter({ jenis: e.target.value || null })} aria-label="Jenis layanan">
-              <option value="">Produk & jasa</option>
-              <option value="produk">{SERVICE_TYPES.produk}</option>
-              <option value="jasa">{SERVICE_TYPES.jasa}</option>
-            </Select>
             <button
               type="button"
               aria-pressed={promoOnly}
               onClick={() => setFilter({ promo: promoOnly ? null : "1" })}
               className={cn(
-                "tap flex h-10 items-center justify-center gap-1.5 rounded-xl border px-3.5 text-[13px] font-semibold",
+                "tap col-span-2 flex h-10 items-center justify-center gap-1.5 rounded-xl border px-3.5 text-[13px] font-semibold md:col-span-1",
                 promoOnly ? "border-gold bg-gold text-white" : "border-blush-line bg-blush text-maroon hover:border-maroon/40",
               )}
             >
-              <Tag className="h-4 w-4" /> GLP Perk
+              <Tag className="h-4 w-4" /> GLP Promo
             </button>
           </div>
 
@@ -440,7 +402,7 @@ export default function DirektoriPage() {
 
         {perks.length > 0 && (
           <section className="mt-12 md:mt-16">
-            <SectionHead eyebrow="GLP Perk" title="Promo khusus sesama lulusan" href="/lulusan?promo=1" link="Lihat semua promo" />
+            <SectionHead eyebrow="GLP Promo" title="Promo khusus sesama lulusan" href="/lulusan?promo=1" link="Lihat semua promo" />
             <Card className="mt-5 divide-y divide-line">
               {perks.slice(0, 5).map((b) => (
                 <Link key={b.id} href={`/bisnis/${b.id}`} className="tap-soft flex items-center gap-4 p-4 hover:bg-page">

@@ -1,6 +1,6 @@
 "use client";
 
-// Extras of one listing: the GLP Perk (promo + code) and consent for collaboration stories.
+// Extras of one listing: the GLP Promo (promo + code) and consent for collaboration stories.
 
 import { Tag } from "lucide-react";
 import { useState } from "react";
@@ -16,7 +16,7 @@ function StaffNote({ status, note }: { status: Enums<"review_status">; note: str
   return <p className="mt-3 rounded-xl bg-red-soft px-3 py-2 text-[13px] text-red">Catatan staf: {note}</p>;
 }
 
-// ── GLP Perk ────────────────────────────────────────────────────────
+// ── GLP Promo ────────────────────────────────────────────────────────
 
 // One deal per listing for fellow graduates. The title shows on the card; the code only opens for verified graduates.
 export function PromoSection({ businessId }: { businessId: string }) {
@@ -60,7 +60,7 @@ export function PromoSection({ businessId }: { businessId: string }) {
   const setActive = async (active: boolean) => {
     const { error } = await supabase.from("promos").update({ active }).eq("id", row!.id);
     if (error) return toast("Belum tersimpan. Coba lagi ya.", "error"), false; // false: the switch goes back
-    toast(active ? "GLP Perk ditampilkan di kartu bisnis." : "GLP Perk disembunyikan.");
+    toast(active ? "GLP Promo ditampilkan di kartu bisnis." : "GLP Promo disembunyikan.");
     promo.reload();
   };
   const remove = async () => {
@@ -75,7 +75,7 @@ export function PromoSection({ businessId }: { businessId: string }) {
     <Card className="p-5">
       <div className="flex items-center justify-between gap-3">
         <h3 className="h-card flex items-center gap-2">
-          <Tag className="h-4 w-4 text-gold" /> GLP Perk
+          <Tag className="h-4 w-4 text-gold" /> GLP Promo
         </h3>
         {badge && <Badge tone={badge.tone}>{badge.label}</Badge>}
       </div>
@@ -92,7 +92,7 @@ export function PromoSection({ businessId }: { businessId: string }) {
           {row && (
             <label className="mt-4 flex items-center justify-between gap-4 rounded-xl bg-page p-3.5 text-sm font-semibold">
               Tampilkan di kartu bisnis
-              <Toggle checked={row.active} onChange={setActive} label="Tampilkan GLP Perk" />
+              <Toggle checked={row.active} onChange={setActive} label="Tampilkan GLP Promo" />
             </label>
           )}
 
