@@ -2,7 +2,7 @@
 
 // Dashboard: profile, saved items, the member's RSVPs and event proposals, privacy requests and sign-out.
 
-import { Bookmark, Download, LogOut, Pencil, Trash2 } from "lucide-react";
+import { Bookmark, LogOut, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../_lib/auth";
@@ -20,7 +20,7 @@ export function AkunTab() {
   const { user, profile, signOut, isSaved } = useAuth();
   const uid = user!.id;
   const [editing, setEditing] = useState(false);
-  const [asking, setAsking] = useState<Enums<"privacy_kind"> | null>(null);
+  const [asking, setAsking] = useState(false); // "Minta hapus akun" asks first
 
   const saves = useQuery(() => supabase.from("saves").select("business_id, peluang_id").eq("user_id", uid), [uid]);
   const businessIds = (saves.data ?? []).flatMap((s) => (s.business_id ? [s.business_id] : []));
@@ -50,9 +50,9 @@ export function AkunTab() {
   const open = (kind: Enums<"privacy_kind">) => requests.data?.some((r) => r.kind === kind && !r.handled_at);
 
   const ask = async () => {
-    const { error } = await supabase.from("privacy_requests").insert({ user_id: uid, kind: asking! });
+    const { error } = await supabase.from("privacy_requests").insert({ user_id: uid, kind: "delete" });
     if (error) throw new Error("Permintaan belum terkirim. Coba lagi ya.");
-    setAsking(null);
+    setAsking(false);
     toast("Permintaan terkirim. Staf AsiaWorks akan memprosesnya.");
     requests.reload();
   };
@@ -96,18 +96,15 @@ export function AkunTab() {
 
         <Card className="rise p-5" style={{ "--i": 1 } as React.CSSProperties}>
           <h2 className="h-card">Privasi data</h2>
-          <p className="body-copy mt-1 text-[13px]">Data kamu, hak kamu. Permintaan di bawah ini diproses staf AsiaWorks.</p>
-          {/* Without the list of earlier requests the buttons cannot know what is already being processed. */}
+          <p className="body-copy mt-1 text-[13px]">Data kamu, hak kamu. Permintaan hapus akun diproses staf AsiaWorks.</p>
+          {/* Without the list of earlier requests the button cannot know what is already being processed. */}
           {requests.error ? (
             <div className="mt-4">
               <Failed query={requests} />
             </div>
           ) : (
             <div className="mt-4 space-y-2">
-              <Button variant="secondary" full disabled={requests.loading || open("export")} onClick={() => setAsking("export")}>
-                <Download className="h-4 w-4" /> {open("export") ? "Salinan data sedang disiapkan" : "Minta salinan data saya"}
-              </Button>
-              <Button variant="danger" full disabled={requests.loading || open("delete")} onClick={() => setAsking("delete")}>
+              <Button variant="danger" full disabled={requests.loading || open("delete")} onClick={() => setAsking(true)}>
                 <Trash2 className="h-4 w-4" /> {open("delete") ? "Penghapusan akun sedang diproses" : "Minta hapus akun"}
               </Button>
               {open("delete") && <p className="text-[12px] text-ink-soft">Berubah pikiran? Kabari staf AsiaWorks sebelum akunnya dihapus, permintaannya bisa ditutup.</p>}
@@ -208,15 +205,13 @@ export function AkunTab() {
       </Sheet>
 
       <ConfirmSheet
-        open={!!asking}
-        onClose={() => setAsking(null)}
+        open={asking}
+        onClose={() => setAsking(false)}
         onConfirm={ask}
-        title={asking === "delete" ? "Minta hapus akun?" : "Minta salinan data?"}
+        title="Minta hapus akun?"
         confirmLabel="Kirim permintaan"
       >
-        {asking === "delete"
-          ? "Staf akan menghapus akun kamu beserta semua bisnis, peluang, koneksi, dan file yang kamu unggah. Ini permanen dan tidak bisa dibatalkan."
-          : "Staf akan menyiapkan salinan semua data yang tersimpan tentang kamu dan mengirimkannya ke email kamu."}
+        Staf akan menghapus akun kamu beserta semua bisnis, peluang, koneksi, dan file yang kamu unggah. Ini permanen dan tidak bisa dibatalkan.
       </ConfirmSheet>
     </div>
   );

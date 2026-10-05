@@ -12,6 +12,7 @@ import { AcaraStaf } from "../_components/staff/acara";
 import { Audit } from "../_components/staff/audit";
 import { BannerStaf } from "../_components/staff/banner";
 import { CeritaStaf } from "../_components/staff/cerita";
+import { AkunStaf, BisnisStaf } from "../_components/staff/direktori";
 import { Moderasi } from "../_components/staff/moderasi";
 import { Privasi } from "../_components/staff/privasi";
 import { Ringkasan } from "../_components/staff/ringkasan";
@@ -126,6 +127,8 @@ export default function StaffPage() {
             {section.key === "verifikasi" && <Verifikasi onChanged={staffChanged} />}
             {section.key === "moderasi" && <Moderasi overview={overview.data} onChanged={staffChanged} />}
             {section.key === "acara" && <AcaraStaf onChanged={staffChanged} />}
+            {section.key === "akun" && <AkunStaf />}
+            {section.key === "bisnis" && <BisnisStaf />}
             {section.key === "cerita" && <CeritaStaf />}
             {section.key === "banner" && <BannerStaf />}
             {section.key === "privasi" && <Privasi onChanged={staffChanged} />}

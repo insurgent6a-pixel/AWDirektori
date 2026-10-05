@@ -2,7 +2,7 @@
 
 // Small pieces the staff screens share.
 
-import { BookOpen, CalendarDays, LayoutGrid, LockKeyhole, type LucideIcon, Megaphone, ScrollText, ShieldCheck, UserCheck } from "lucide-react";
+import { BookOpen, CalendarDays, LayoutGrid, LockKeyhole, type LucideIcon, Megaphone, ScrollText, ShieldCheck, Store, UserCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { REVIEW_LABELS } from "../../_lib/constants";
 import { pesan } from "../../_lib/format";
@@ -21,6 +21,8 @@ export const STAFF_SECTIONS: { key: string; label: string; icon: LucideIcon; que
   { key: "verifikasi", label: "Verifikasi", icon: UserCheck, queue: (o) => o.graduates_pending },
   { key: "moderasi", label: "Moderasi", icon: ShieldCheck, queue: (o) => o.businesses_pending + o.peluang_pending + o.promos_pending + o.reports_open },
   { key: "acara", label: "Acara", icon: CalendarDays, queue: (o) => o.events_pending },
+  { key: "akun", label: "Akun", icon: Users },
+  { key: "bisnis", label: "Bisnis", icon: Store },
   { key: "cerita", label: "Cerita", icon: BookOpen },
   { key: "banner", label: "Banner", icon: Megaphone },
   { key: "privasi", label: "Privasi", icon: LockKeyhole, queue: (o) => o.privacy_open },
