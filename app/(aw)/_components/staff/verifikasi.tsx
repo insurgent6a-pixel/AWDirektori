@@ -14,7 +14,7 @@ import { Avatar, Badge, Button, Card, Chip, Empty, Failed, SearchInput, Skeleton
 import { AutoApprove, NoteSheet, SectionTitle } from "./shared";
 
 type Status = Enums<"verification_status">;
-type Member = {
+export type Member = {
   id: string;
   role: Enums<"user_role">;
   full_name: string;
@@ -30,7 +30,7 @@ type Member = {
   phone: string | null;
 };
 
-const TONES = { draft: "gray", pending: "amber", approved: "green", rejected: "red" } as const;
+export const VERIFICATION_TONES = { draft: "gray", pending: "amber", approved: "green", rejected: "red" } as const;
 const FILTERS: Status[] = ["pending", "approved", "rejected", "draft"];
 
 export function Verifikasi({ onChanged }: { onChanged: () => void }) {
@@ -102,7 +102,7 @@ export function Verifikasi({ onChanged }: { onChanged: () => void }) {
                   <p className="flex flex-wrap items-center gap-2 font-semibold">
                     {u.full_name || "Tanpa nama"}
                     {u.nickname && <span className="font-normal text-ink-soft">({u.nickname})</span>}
-                    <Badge tone={TONES[u.verification]}>{VERIFICATION_LABELS[u.verification]}</Badge>
+                    <Badge tone={VERIFICATION_TONES[u.verification]}>{VERIFICATION_LABELS[u.verification]}</Badge>
                   </p>
                   <p className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
                     {/* what the person chose on the form: IB and IA may come without a number; LP only on a profile that was sent back and saved half-filled */}

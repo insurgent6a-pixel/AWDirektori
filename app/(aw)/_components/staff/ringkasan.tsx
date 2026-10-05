@@ -17,12 +17,14 @@ const QUEUES: [key: string, label: string, tab: string][] = [
   ["privacy_open", "Permintaan privasi", "privasi"],
 ];
 
-const TOTALS: [key: string, label: string][] = [
-  ["businesses_live", "Bisnis tayang"],
-  ["businesses_total", "Semua bisnis"],
-  ["businesses_suspended", "Ditangguhkan"],
-  ["graduates", "Lulusan terverifikasi"],
-  ["members", "Akun anggota"],
+// what = what the number counts, said plainly: "tayang" and "semua" differ, and so do graduates and accounts.
+// tab = the list behind the number.
+const TOTALS: [key: string, label: string, what?: string, tab?: string][] = [
+  ["businesses_live", "Bisnis tayang", "Yang terlihat publik saat ini", "bisnis&tampil=tayang"],
+  ["businesses_total", "Semua bisnis", "Termasuk draf, menunggu tinjauan, dan yang dimatikan pemiliknya", "bisnis"],
+  ["businesses_suspended", "Ditangguhkan", "Diturunkan staf", "bisnis&tampil=tidak"],
+  ["graduates", "Lulusan terverifikasi", "Akun yang program dan angkatannya sudah disetujui", "akun&status=approved"],
+  ["members", "Akun anggota", "Semua yang mendaftar, terverifikasi atau belum", "akun"],
   ["events_upcoming", "Acara mendatang"],
   ["signups_week", "Pendaftar 7 hari terakhir"],
   ["connections_week", "Permintaan Hubungkan 7 hari terakhir"],
@@ -58,12 +60,24 @@ export function Ringkasan({ overview }: { overview: Overview | null }) {
       <section>
         <SectionTitle title="Direktori saat ini" />
         <dl className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {TOTALS.map(([key, label]) => (
-            <Card key={key} className="p-4">
-              <dd className="text-2xl font-semibold tracking-tight">{overview[key] ?? 0}</dd>
-              <dt className="mt-1 text-[12px] text-ink-soft">{label}</dt>
-            </Card>
-          ))}
+          {TOTALS.map(([key, label, what, tab]) => {
+            const total = (
+              <>
+                <dd className="text-2xl font-semibold tracking-tight">{overview[key] ?? 0}</dd>
+                <dt className="mt-1 text-[12px] font-medium">{label}</dt>
+                {what && <dd className="mt-0.5 text-[12px] text-ink-soft">{what}</dd>}
+              </>
+            );
+            return tab ? (
+              <Link key={key} href={`/staff?tab=${tab}`} className="tap-soft block rounded-2xl border border-line bg-surface p-4 shadow-card hover:border-maroon/40">
+                {total}
+              </Link>
+            ) : (
+              <Card key={key} className="p-4">
+                {total}
+              </Card>
+            );
+          })}
         </dl>
       </section>
 
