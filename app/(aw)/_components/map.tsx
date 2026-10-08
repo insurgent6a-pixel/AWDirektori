@@ -16,7 +16,7 @@ export type Pin = {
   title: string;
   subtitle?: string;
   href?: string;
-  approximate?: boolean; // drawn as a ~1 km circle instead of a point
+  approximate?: boolean; // drawn as a round dot in a ~1 km circle instead of a pointed pin
 };
 
 const INDONESIA: LatLngBoundsExpression = [
@@ -112,8 +112,13 @@ export default function MapView({
       if (cancelled) return;
       layers.current.forEach(({ layer }) => layer.remove());
       layers.current = [];
-      const icon = (on: boolean) =>
-        L.divIcon({ className: "", html: `<span class="aw-pin" data-active="${on}"></span>`, iconSize: [32, 32], iconAnchor: [16, 30] });
+      const icon = (on: boolean, approximate = false) =>
+        L.divIcon({
+          className: "",
+          html: `<span class="aw-pin" data-active="${on}"${approximate ? " data-approx" : ""}></span>`,
+          iconSize: approximate ? [24, 24] : [32, 32],
+          iconAnchor: approximate ? [12, 12] : [16, 30],
+        });
 
       if (picker) {
         if (!pick) return;
@@ -130,17 +135,21 @@ export default function MapView({
       for (const pin of pins) {
         const on = pin.id === active.current;
         // title: the pin's name for a pointer's tooltip and for screen readers (Leaflet makes each marker a button).
-        const layer = pin.approximate
-          ? L.circle([pin.lat, pin.lng], { radius: 1000, color: "#8b1a1a", weight: 1.5, fillColor: "#8b1a1a", fillOpacity: on ? 0.3 : 0.14 })
-          : L.marker([pin.lat, pin.lng], { icon: icon(on), zIndexOffset: on ? 1000 : 0, title: pin.title });
-        layer.bindPopup(
-          `<strong>${escapeHtml(pin.title)}</strong>` +
-            (pin.subtitle ? `<br>${escapeHtml(pin.subtitle)}` : "") +
-            (pin.href ? `<br><a href="${escapeHtml(pin.href)}" class="tap">Lihat bisnis</a>` : ""),
-        );
-        layer.on("click", () => handlers.current.onSelect?.(pin.id));
-        layer.addTo(instance);
-        layers.current.push({ id: pin.id, layer });
+        const marker = L.marker([pin.lat, pin.lng], { icon: icon(on, pin.approximate), zIndexOffset: on ? 1000 : 0, title: pin.title });
+        // The 1 km circle is smaller than a pixel on a map of the whole country, so an approximate pin gets a dot as well.
+        const drawn = pin.approximate
+          ? [L.circle([pin.lat, pin.lng], { radius: 1000, color: "#8b1a1a", weight: 1.5, fillColor: "#8b1a1a", fillOpacity: on ? 0.3 : 0.14 }), marker]
+          : [marker];
+        for (const layer of drawn) {
+          layer.bindPopup(
+            `<strong>${escapeHtml(pin.title)}</strong>` +
+              (pin.subtitle ? `<br>${escapeHtml(pin.subtitle)}` : "") +
+              (pin.href ? `<br><a href="${escapeHtml(pin.href)}" class="tap">Lihat bisnis</a>` : ""),
+          );
+          layer.on("click", () => handlers.current.onSelect?.(pin.id));
+          layer.addTo(instance);
+          layers.current.push({ id: pin.id, layer });
+        }
       }
     });
     return () => {

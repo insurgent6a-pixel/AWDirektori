@@ -480,6 +480,13 @@ html:has(.aw-sheet[open]) {
   border-radius: 50%;
   background: var(--color-white);
 }
+/* An approximate place: a round dot, since a pointed pin would claim an exact spot. */
+.aw-pin[data-approx] {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  rotate: none;
+}
 .aw-pin[data-active="true"] {
   background: var(--color-maroon-deep);
   scale: 1.2;
