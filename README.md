@@ -126,6 +126,10 @@ scripts/
   check.mjs             proves the rules below through the real API (npm run check)
   seed.mjs              demo data through the real flows (npm run seed)
   import.mjs            the Expo Google Form's answers (CSV) into accounts and listings; prints the plan unless --write
+  devlog.mjs            writes docs/devlog.csv, one row per change, from the git history (npm run devlog)
+docs/
+  devlog.csv            the dev log sheet
+  handover.html         source of AsiaWorks-Direktori-Handover.pdf (print to PDF from Edge or Chrome: A4, no margins)
 serve.mjs, screenshot.mjs              design workflow: dev server on :3000 and page screenshots
 ```
 

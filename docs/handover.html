@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AsiaWorks Direktori: Handover</title>
+<!-- Source of docs/AsiaWorks-Direktori-Handover.pdf. Print to PDF from Edge or Chrome: A4, no margins, background graphics on. -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #f7f7f9; --line: #e3e6ec; --ink: #14181f; --soft: #6b7280;
+    --maroon: #8b1a1a; --deep: #4a0d0f; --blush: #f8e7e5; --blush-line: #ebd3d1;
+    --brass: #c9a84c; --gold: #8a6d1f; --gold-soft: #f6ebd0; --navy: #0a0d12; --green: #2f6b4f; --green-soft: #e7f1eb;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 400 9.6pt/1.55 Inter, "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  .page { position: relative; width: 210mm; height: 297mm; padding: 24mm 18mm 20mm; overflow: hidden; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  /* running head and foot */
+  .head { position: absolute; top: 10mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 3mm; border-bottom: 0.3mm solid var(--line); font-size: 7.6pt; color: var(--soft); }
+  .mark { font: 700 9pt Cinzel, Georgia, serif; letter-spacing: 0.14em; color: var(--ink); }
+  .mark b { color: var(--maroon); font-size: 1.25em; }
+  .foot { position: absolute; bottom: 9mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; font-size: 7.6pt; color: var(--soft); }
+
+  h1, h2, h3 { font-family: Montserrat, "Segoe UI", sans-serif; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: 23pt; font-weight: 800; line-height: 1.12; margin-bottom: 3mm; }
+  h1 em { font-style: normal; color: var(--maroon); }
+  h2 { font-size: 11.5pt; font-weight: 700; margin: 6mm 0 2mm; }
+  h3 { font-size: 9.6pt; font-weight: 700; margin-bottom: 1mm; letter-spacing: -0.01em; }
+  p { margin: 0 0 2.4mm; }
+  .lede { font-size: 10.6pt; color: #3a404b; max-width: 150mm; margin-bottom: 5mm; }
+  .note { font-size: 8pt; color: var(--soft); }
+  ul { margin: 0; padding-left: 4.4mm; }
+  li { margin-bottom: 1.1mm; }
+  li::marker { color: var(--maroon); }
+  code { font: 500 8.4pt Consolas, monospace; background: var(--page); border: 0.2mm solid var(--line); border-radius: 1mm; padding: 0 1mm; }
+  .id { font-style: italic; }
+
+  .cols { display: grid; gap: 5mm; }
+  .c2 { grid-template-columns: 1fr 1fr; } .c3 { grid-template-columns: repeat(3, 1fr); } .c4 { grid-template-columns: repeat(4, 1fr); }
+  .card { border: 0.3mm solid var(--line); border-radius: 3mm; padding: 4mm; background: #fff; box-shadow: 0 0.3mm 0.6mm rgb(74 13 15 / 0.05), 0 2mm 5mm -2.5mm rgb(74 13 15 / 0.14); }
+  .card.tint { background: var(--blush); border-color: var(--blush-line); box-shadow: none; }
+  .card.gold { background: var(--gold-soft); border-color: #ead9ac; box-shadow: none; }
+  .stat b { display: block; font: 800 20pt/1 Montserrat, sans-serif; color: var(--maroon); letter-spacing: -0.03em; margin-bottom: 1.5mm; }
+  .stat span { font-size: 8.2pt; color: var(--soft); line-height: 1.35; display: block; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.8pt; }
+  th { text-align: left; font: 700 7.8pt Montserrat, sans-serif; color: var(--soft); padding: 0 2.5mm 1.8mm 0; border-bottom: 0.4mm solid var(--ink); }
+  td { vertical-align: top; padding: 1.9mm 2.5mm 1.9mm 0; border-bottom: 0.2mm solid var(--line); }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td.wrap { white-space: normal; }
+
+  .shot { border: 0.3mm solid var(--line); border-radius: 2.5mm; overflow: hidden; box-shadow: 0 0.5mm 1mm rgb(74 13 15 / 0.06), 0 5mm 10mm -5mm rgb(74 13 15 / 0.25); background: #fff; }
+  .shot img { display: block; width: 100%; }
+  figure { margin: 0; }
+  figcaption { font-size: 7.8pt; color: var(--soft); margin-top: 2mm; }
+
+  .check { list-style: none; padding: 0; }
+  .check li { position: relative; padding-left: 6.5mm; margin-bottom: 1.7mm; }
+  .check li::before { content: ""; position: absolute; left: 0; top: 0.7mm; width: 3.2mm; height: 3.2mm; border: 0.35mm solid var(--maroon); border-radius: 0.8mm; }
+  .tag { display: inline-block; font: 700 7.2pt Montserrat, sans-serif; padding: 0.6mm 2.2mm; border-radius: 10mm; background: var(--blush); color: var(--maroon); }
+  .tag.g { background: var(--green-soft); color: var(--green); } .tag.y { background: var(--gold-soft); color: var(--gold); }
+
+  /* cover */
+  .cover { padding: 0; color: #fff; background:
+    radial-gradient(120mm 90mm at 92% 8%, rgb(192 57 43 / 0.55), transparent 70%),
+    radial-gradient(150mm 120mm at 0% 100%, rgb(139 26 26 / 0.7), transparent 70%),
+    linear-gradient(160deg, #1a0a0c, var(--navy) 55%, #1c0709); }
+  .cover .in { position: absolute; inset: 22mm 20mm; display: flex; flex-direction: column; }
+  .cover .mark { font-size: 15pt; color: #fff; } .cover .mark b { color: #e0463a; }
+  .cover .sub { font: 600 7.5pt Cinzel, serif; letter-spacing: 0.42em; color: var(--brass); margin-top: 1.5mm; padding-left: 16mm; }
+  .cover h1 { font-size: 46pt; line-height: 1.02; letter-spacing: -0.035em; margin: auto 0 6mm; }
+  .cover .hero { margin-top: 13mm; height: 98mm; border-color: rgb(255 255 255 / 0.14); box-shadow: 0 10mm 26mm -8mm rgb(0 0 0 / 0.7); }
+  .cover h1 span { color: var(--brass); }
+  .cover .lede { color: rgb(255 255 255 / 0.78); font-size: 12pt; max-width: 125mm; }
+  .cover .rule { height: 0.4mm; background: linear-gradient(90deg, var(--brass), transparent); margin: 10mm 0 6mm; }
+  .cover dl { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; margin: 0; font-size: 9pt; }
+  .cover dt { color: rgb(255 255 255 / 0.55); font-size: 7.6pt; margin-bottom: 1mm; }
+  .cover dd { margin: 0; font-weight: 600; }
+
+  .plan { display: flex; flex-direction: column; }
+  .plan h3 { font-size: 11pt; }
+  .plan .for { font-size: 8.2pt; color: var(--soft); margin-bottom: 2mm; min-height: 8mm; }
+  .plan ul { font-size: 8.5pt; }
+  .plan .fee { margin-top: auto; padding-top: 3mm; border-top: 0.2mm solid var(--line); font-size: 8pt; color: var(--soft); }
+  .plan.pick { border-color: var(--maroon); border-width: 0.5mm; }
+  .sign { border-top: 0.3mm solid var(--ink); padding-top: 2mm; font-size: 8pt; color: var(--soft); margin-top: 14mm; }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="page cover">
+  <div class="in">
+    <div>
+      <div class="mark">ASIA<b>W</b>ORKS</div>
+      <div class="sub">DIREKTORI</div>
+    </div>
+    <div class="shot hero"><img src="img/home.jpg" alt=""></div>
+    <h1>Handover<br><span>document.</span></h1>
+    <p class="lede">Everything the AsiaWorks team needs to own, run and grow the graduate business directory: what was built, how it works, where it lives, and how to keep it healthy.</p>
+    <div class="rule"></div>
+    <dl>
+      <div><dt>Live site</dt><dd>direktori.asiaworks.id</dd></div>
+      <div><dt>Prepared for</dt><dd>AsiaWorks Indonesia</dd></div>
+      <div><dt>Prepared by</dt><dd>OmniSync Media</dd></div>
+      <div><dt>Date</dt><dd>9 October 2026</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · At a glance</span></div>
+  <h1>A directory built for <em>AsiaWorks graduates.</em></h1>
+  <p class="lede">AsiaWorks Direktori is where graduates list their businesses, the public finds them, and graduates find each other to work together. It is live, in Bahasa Indonesia, and works the same on a phone and on a desktop.</p>
+
+  <div class="cols c4">
+    <div class="card stat"><b>23</b><span>businesses live in the directory</span></div>
+    <div class="card stat"><b>22</b><span>verified graduates behind them</span></div>
+    <div class="card stat"><b>5</b><span>cities on the map</span></div>
+    <div class="card stat"><b>21</b><span>changes logged since the first build</span></div>
+  </div>
+  <p class="note" style="margin-top:2mm">Directory figures as shown on the live site on 9 October 2026. Every change is listed in the dev log.</p>
+
+  <div class="cols" style="grid-template-columns: 1fr 44mm; align-items: start; margin-top: 5mm">
+    <figure><div class="shot"><img src="img/home.jpg" alt="Home page on a desktop"></div><figcaption>Home on a desktop: search, area filters, the map and the business list side by side.</figcaption></figure>
+    <figure><div class="shot"><img src="img/home-phone.jpg" alt="Home page on a phone"></div><figcaption>The same page on a phone, with the bottom navigation bar.</figcaption></figure>
+  </div>
+
+  <h2>What you are receiving</h2>
+  <div class="cols c2">
+    <ul>
+      <li><b>The live website</b> at direktori.asiaworks.id, linked to and from asiaworks.id.</li>
+      <li><b>The staff console</b> at <code>/staff</code>, where your team verifies graduates and runs the directory.</li>
+      <li><b>The full source code</b>, in a GitHub repository, with setup instructions.</li>
+    </ul>
+    <ul>
+      <li><b>The database</b> with all its permission rules, plus a script that tests those rules.</li>
+      <li><b>An import tool</b> for the Expo sign-up form's answers, and a 47-second showcase video.</li>
+      <li><b>This document</b> and a dev log sheet (<code>docs/devlog.csv</code>) of every change made.</li>
+    </ul>
+  </div>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>2</span></div>
+</section>
+
+<!-- 3 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · The site, page by page</span></div>
+  <h1>Nine pages, <em>each with one job.</em></h1>
+  <p class="lede">Every page has breadcrumbs and its own search. Visitors can browse all of it without an account.</p>
+
+  <table>
+    <tr><th style="width:27mm">Address</th><th style="width:30mm">Name on the site</th><th>What it is for</th></tr>
+    <tr><td><code>/</code></td><td>Direktori</td><td class="wrap">Home. Banner slider, shortcuts, search, area and category filters, the map with pins and the business list, browse by category, latest Peluang, GLP Promo and events.</td></tr>
+    <tr><td><code>/bisnis/…</code></td><td>Halaman bisnis</td><td class="wrap">One business: description, pictures, links, locations on a map, the owner, its promo, and the Hubungkan and Lihat kontak buttons.</td></tr>
+    <tr><td><code>/peluang</code></td><td>Peluang</td><td class="wrap">Partner requests from graduates: supplier, mitra, vendor, konsultan, freelancer or karyawan.</td></tr>
+    <tr><td><code>/acara</code></td><td>Acara</td><td class="wrap">Meetups, workshops and gatherings with RSVP, plus collaboration stories and "Usulkan acara" for graduates who want to host.</td></tr>
+    <tr><td><code>/lulusan</code></td><td>Lulusan</td><td class="wrap">Meet the graduates: every live business as a card, searchable by name, owner or batch (LP, IA, IB).</td></tr>
+    <tr><td><code>/daftar</code></td><td>Pasang bisnis</td><td class="wrap">Sign-up in three short steps: account, programs and batch, then the business.</td></tr>
+    <tr><td><code>/masuk</code></td><td>Masuk</td><td class="wrap">Member login, with "Lupa kata sandi".</td></tr>
+    <tr><td><code>/akun</code></td><td>Dasbor</td><td class="wrap">The member's dashboard: Peluang, Bisnis, Koneksi and Akun.</td></tr>
+    <tr><td><code>/staff</code></td><td>Konsol staf</td><td class="wrap">Staff login and the console. A member's account is refused here.</td></tr>
+  </table>
+
+  <div class="cols c2" style="margin-top:7mm">
+    <figure><div class="shot"><img src="img/lulusan.jpg" alt="Lulusan page"></div><figcaption>Lulusan: live counts at the top, every verified business below.</figcaption></figure>
+    <figure><div class="shot"><img src="img/peluang.jpg" alt="Peluang page"></div><figcaption>Peluang: real needs posted by graduates, answered through Hubungkan.</figcaption></figure>
+  </div>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>3</span></div>
+</section>
+
+<!-- 4 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Features</span></div>
+  <h1>What each person <em>can do.</em></h1>
+  <p class="lede">There are four kinds of people on the site. Each one sees and does more than the one before.</p>
+
+  <div class="cols c2">
+    <div class="card">
+      <span class="tag y">Visitor · no account</span>
+      <ul style="margin-top:3mm">
+        <li>Search by keyword, category and area (Jabodetabek, Makassar, Luar Jabodetabek, or any other region).</li>
+        <li>See businesses on a map or as a list, and open any business page.</li>
+        <li>Browse Peluang, events, GLP Promo and collaboration stories.</li>
+        <li>Tap an owner's name to see "Profil lulusan": name, programs and batch.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag">Member · signed up</span>
+      <ul style="margin-top:3mm">
+        <li>Sign up in three steps and choose the programs finished (IB, IA, LP). LP needs its batch number.</li>
+        <li>Send a <span class="id">Hubungkan</span> request to any business, or answer a Peluang.</li>
+        <li>RSVP to events, with a waiting list when an event is full.</li>
+        <li>Save businesses to come back to, and report a listing to staff.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag g">Graduate · verified by staff</span>
+      <ul style="margin-top:3mm">
+        <li>List one or more businesses. Several branches are one listing with several locations.</li>
+        <li>Put a pin on the map, show only an approximate area, or mark the business "Online saja".</li>
+        <li>Post Peluang, also without a business listing, and offer a GLP Promo to fellow graduates.</li>
+        <li>Open a business's contact through "Lihat kontak". The owner sees who looked.</li>
+        <li>Offer to host an event in their city.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag g">Business owner · in the dashboard</span>
+      <ul style="margin-top:3mm">
+        <li>Edit the listing at any time. Changes go live at once.</li>
+        <li>Switch a listing off and on. Off hides it everywhere and keeps the content.</li>
+        <li>See how many people viewed it, opened its contact and asked to connect.</li>
+        <li>Accept or decline Hubungkan requests. Accepting opens both sides' contacts.</li>
+        <li>Delete a listing or the whole account, for good.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>How graduates work together</h2>
+  <table>
+    <tr><td style="width:27mm">Hubungkan</td><td class="wrap">A short request from one member to a business. Only the owner answers it. Staff cannot read these.</td></tr>
+    <tr><td>Peluang</td><td class="wrap">A real need, posted publicly: a supplier, partner, vendor, consultant, freelancer or hire.</td></tr>
+    <tr><td>GLP Promo</td><td class="wrap">A deal a business offers to fellow graduates, shown on its card. The owner can switch it off.</td></tr>
+    <tr><td>Acara</td><td class="wrap">Events with RSVP, a seat limit and a waiting list.</td></tr>
+    <tr><td>Cerita</td><td class="wrap">A collaboration story between two businesses, written by staff and published only when both owners agree.</td></tr>
+  </table>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>4</span></div>
+</section>
+
+<!-- 5 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Staff console</span></div>
+  <h1>The staff console, <em>section by section.</em></h1>
+  <p class="lede">Staff sign in at <code>/staff</code>. The first screen shows what is waiting for a decision, and a red badge on each section counts its queue. On a phone the sections sit in a bar at the bottom.</p>
+
+  <figure><div class="shot" style="height:50mm"><img src="img/staff.jpg" alt="Staff console, Ringkasan"></div><figcaption>Ringkasan, shown here with demo data. Every number opens the list behind it.</figcaption></figure>
+  <div class="cols c2" style="margin-top:5mm">
+    <table>
+      <tr><td>Ringkasan</td><td class="wrap">Queues, directory numbers, latest activity.</td></tr>
+      <tr><td>Verifikasi</td><td class="wrap">Approve or reject a graduate's program and batch.</td></tr>
+      <tr><td>Moderasi</td><td class="wrap">Review businesses, Peluang and Promo; suspend or reinstate; handle reports.</td></tr>
+      <tr><td>Acara</td><td class="wrap">Create events, see RSVPs, review hosting offers.</td></tr>
+      <tr><td>Akun</td><td class="wrap">Every account, its contact, status and businesses.</td></tr>
+    </table>
+    <table>
+      <tr><td>Bisnis</td><td class="wrap">Every business as Tayang or Tidak tayang, with the reason.</td></tr>
+      <tr><td>Cerita</td><td class="wrap">Write collaboration stories.</td></tr>
+      <tr><td>Banner</td><td class="wrap">The home slider: announcements and ads for a business.</td></tr>
+      <tr><td>Privasi</td><td class="wrap">Account deletion requests.</td></tr>
+      <tr><td>Log audit</td><td class="wrap">Who did what, and when. The latest 500 actions.</td></tr>
+    </table>
+  </div>
+
+  <div class="cols c2" style="margin-top:6mm">
+    <div>
+      <h2 style="margin-top:0">A normal week for staff</h2>
+      <ul>
+        <li><b>Verifikasi:</b> check new sign-ups against the batch records and approve or reject them.</li>
+        <li><b>Moderasi:</b> review new businesses, Peluang and Promo, and answer reports.</li>
+        <li><b>Banner:</b> keep the slider current. A picture of 1200 × 400 fits best, with its message inside the picture.</li>
+        <li><b>Acara:</b> add upcoming events so the page is never empty.</li>
+        <li><b>Privasi:</b> act on deletion requests from here, not from the Supabase dashboard. Only this route also removes the person's stored files.</li>
+      </ul>
+    </div>
+    <div class="card tint">
+      <h3>Check the four Auto Approve switches</h3>
+      <p>The console has four switches made for demos: Auto Approve Graduates Request, Auto Approve Bisnis, Auto Approve Peluang and Auto Approve Promo. While one is on, whatever is sent goes live with no review.</p>
+      <p style="margin:0"><b>For normal running, keep all four off.</b> They are in Verifikasi and Moderasi, and every automatic approval is written to the audit log.</p>
+    </div>
+  </div>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>5</span></div>
+</section>
+
+<!-- 6 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Rules and privacy</span></div>
+  <h1>The rules that <em>protect members.</em></h1>
+  <style>.tight .card{padding:3.2mm 4mm}.tight{gap:3mm}</style>
+  <p class="lede">These rules live inside the database, not in the screens. Someone who bypasses the website and talks to the database directly meets the same rules.</p>
+
+  <div class="cols c2 tight">
+    <div class="card"><h3>Publishing needs two yeses</h3><p style="margin:0">A business appears only with the owner's consent and a moderator's approval, and only while its owner is a verified graduate.</p></div>
+    <div class="card"><h3>Graduate status comes from staff</h3><p style="margin:0">Never from what a person types. Programs and batch numbers lock once the request is sent. Withdrawing the status takes that person's listings down.</p></div>
+    <div class="card"><h3>Contacts are private</h3><p style="margin:0">Phone numbers and business contacts are stored encrypted. They reach another person only through "Lihat kontak" (verified graduates, and it is recorded) or an accepted Hubungkan request.</p></div>
+    <div class="card"><h3>A suspended listing vanishes everywhere</h3><p style="margin:0">Search, the map, Peluang, promos, stories and ads all drop it at the same moment. The same goes for a listing its owner switched off.</p></div>
+    <div class="card"><h3>Location can be approximate</h3><p style="margin:0">A home business can show an area instead of a point. The database rounds the point to about 1 km before storing it, so the exact spot is never kept.</p></div>
+    <div class="card"><h3>Deletion is real</h3><p style="margin:0">Deleting a listing or an account removes the data and the stored pictures. Only a payment's amount and date would remain, detached from the person.</p></div>
+    <div class="card"><h3>Banners and ads belong to staff</h3><p style="margin:0">Members cannot add, change or remove one. An ad carries the label "Iklan" and leaves the home page while its business is not public.</p></div>
+    <div class="card"><h3>Staff actions are logged</h3><p style="margin:0">Approvals, rejections, suspensions and deletions are written to the audit log by the database itself.</p></div>
+  </div>
+
+  <h2>Who can see what</h2>
+  <table>
+    <tr><th>Information</th><th>Visitor</th><th>Member</th><th>Verified graduate</th><th>Staff</th></tr>
+    <tr><td>Live businesses, Peluang, events</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>Owner's name, programs, batch</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>Business contact</td><td>No</td><td>After an accepted request</td><td>Through Lihat kontak</td><td>Yes</td></tr>
+    <tr><td>Hubungkan requests</td><td>No</td><td colspan="2">Only the two people involved</td><td>No</td></tr>
+    <tr><td>Drafts and switched-off listings</td><td>No</td><td colspan="2">Only their owner</td><td>Yes</td></tr>
+  </table>
+  <p class="note" style="margin-top:4mm"><b>Proving the rules still hold.</b> The project includes a test, <code>npm run check</code>, that signs up its own test accounts, tries each rule as a real visitor, member, graduate and staff member, then removes everything it made. Run it after any change to the database.</p>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>6</span></div>
+</section>
+
+<!-- 7 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Technology and access</span></div>
+  <h1>How it is built, <em>and where it lives.</em></h1>
+  <p class="lede">The directory is deliberately small: one web application and one database service. There is no server of our own to patch or restart.</p>
+
+  <table>
+    <tr><th style="width:34mm">Part</th><th style="width:44mm">What is used</th><th>What it does</th></tr>
+    <tr><td>Website</td><td>Next.js 16, React 19, TypeScript, Tailwind CSS 4</td><td class="wrap">All nine pages. The whole feature is one folder, <code>app/(aw)</code>, so it can be moved into another Next.js site.</td></tr>
+    <tr><td>Hosting</td><td>Vercel</td><td class="wrap">Builds and publishes the site every time the <code>main</code> branch changes.</td></tr>
+    <tr><td>Database and login</td><td>Supabase (PostgreSQL)</td><td class="wrap">Accounts, all directory data, the permission rules, search, and picture storage.</td></tr>
+    <tr><td>Map</td><td>Leaflet with OpenStreetMap</td><td class="wrap">The map and its pins. No API key and no usage fee.</td></tr>
+    <tr><td>Source code</td><td>GitHub</td><td class="wrap">Repository <code>insurgent6a-pixel/AWDirektori</code>. Each change arrives as a pull request.</td></tr>
+    <tr><td>Domain</td><td>direktori.asiaworks.id</td><td class="wrap">A subdomain of asiaworks.id pointing at Vercel.</td></tr>
+  </table>
+
+  <div class="cols c2" style="margin-top:6mm">
+    <div>
+      <h2 style="margin-top:0">How a change reaches the live site</h2>
+      <ul>
+        <li>The change is made on its own branch and opened as a pull request on GitHub.</li>
+        <li>Someone with rights approves and merges it into <code>main</code>.</li>
+        <li>Vercel builds <code>main</code> and the live site updates within a few minutes.</li>
+        <li>A change to the database comes as a dated file in <code>supabase/upgrades/</code>. It is pasted into Supabase's SQL Editor, oldest first. Each file is safe to run twice and deletes nothing.</li>
+      </ul>
+      <p class="note" style="margin-top:3mm">The site's two Supabase settings are stored in Vercel and are built into the site, so changing one needs a redeploy.</p>
+    </div>
+    <div class="card gold">
+      <h3>Access handover checklist</h3>
+      <p class="note" style="color:#5c4a17">Tick each one when AsiaWorks holds an owner-level login.</p>
+      <ul class="check">
+        <li><b>GitHub:</b> the repository, with a named AsiaWorks owner. It is public today; decide whether to make it private.</li>
+        <li><b>Vercel:</b> the project and its environment variables.</li>
+        <li><b>Supabase:</b> the project, including the service role key, kept private.</li>
+        <li><b>Domain:</b> the DNS record for direktori.asiaworks.id.</li>
+        <li><b>Staff console:</b> at least two staff accounts, each a named person.</li>
+        <li><b>Supabase plan:</b> confirmed, with backups (see page 9).</li>
+        <li><b>All database upgrade files</b> confirmed as run on the live project.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Adding a staff account</h2>
+  <p>The person signs up at <code>/daftar</code> (the first step is enough). Someone with Supabase access then sets that account's role to <code>staff</code> in the SQL Editor; the exact line is in the README. After that they sign in at <code>/staff</code>.</p>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>7</span></div>
+</section>
+
+<!-- 8 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Limits</span></div>
+  <h1>What it is sized for, <em>and what it leaves out.</em></h1>
+  <p class="lede">The brief asked for a light, simple build for 35 to 100 members. These are the choices that kept it light. None of them is a problem today; each has a clear upgrade when the directory grows.</p>
+
+  <table>
+    <tr><th style="width:42mm">Choice made</th><th>What it means today</th><th style="width:52mm">When to revisit</th></tr>
+    <tr><td class="wrap">Search returns up to 200 businesses</td><td class="wrap">Every business fits in one result, so search and the map feel instant.</td><td class="wrap">When live businesses approach 200.</td></tr>
+    <tr><td class="wrap">Peluang and Acara filter in the browser</td><td class="wrap">One fetch, then filtering with no waiting.</td><td class="wrap">Past a few hundred Peluang or events.</td></tr>
+    <tr><td class="wrap">Page views are a simple counter</td><td class="wrap">Counted once per browser session. Good for a rough picture, not for billing.</td><td class="wrap">If view numbers are ever sold to advertisers.</td></tr>
+    <tr><td class="wrap">Audit log shows the latest 500 actions</td><td class="wrap">Older actions stay stored; the screen just does not list them.</td><td class="wrap">When staff need to look further back.</td></tr>
+    <tr><td class="wrap">Pages are drawn in the browser</td><td class="wrap">Fast for people. Google may index individual business pages less fully.</td><td class="wrap">When being found on Google matters for each business.</td></tr>
+    <tr><td class="wrap">Deleted pictures linger briefly</td><td class="wrap">A deleted picture is gone from storage at once, but its direct address can answer for up to a minute.</td><td class="wrap">No action needed.</td></tr>
+  </table>
+
+  <h2>Not included in this build</h2>
+  <div class="cols c2">
+    <div class="card">
+      <h3>Online payments</h3>
+      <p style="margin:0">No payment provider is connected and no screen asks for money. Staff put ads up by hand. The database is ready for payments, so connecting a provider later does not need a rebuild.</p>
+    </div>
+    <div class="card">
+      <h3>Email sending at volume</h3>
+      <p style="margin:0">Supabase's built-in mailer sends only a few messages an hour. For password resets to work reliably as membership grows, connect AsiaWorks' own email service (SMTP) in Supabase.</p>
+    </div>
+    <div class="card">
+      <h3>Notifications</h3>
+      <p style="margin:0">Members see new Hubungkan requests as a badge in their dashboard. The site does not send email or WhatsApp alerts.</p>
+    </div>
+    <div class="card">
+      <h3>A member's own data export</h3>
+      <p style="margin:0">Members can ask for their account to be deleted from the dashboard. A self-service copy of their data is not offered.</p>
+    </div>
+  </div>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>8</span></div>
+</section>
+
+<!-- 9 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Maintenance</span></div>
+  <h1>Keeping it <em>healthy.</em></h1>
+  <p class="lede">Most of the work is the staff's weekly routine on page 5. The technical upkeep below is small, but skipping it is how a site quietly ages.</p>
+
+  <table>
+    <tr><th style="width:26mm">How often</th><th>Task</th><th style="width:58mm">Why it matters</th></tr>
+    <tr><td>Weekly</td><td class="wrap">Clear the Verifikasi and Moderasi queues. Open the live site and try one search.</td><td class="wrap">Graduates wait on staff to go live.</td></tr>
+    <tr><td>Monthly</td><td class="wrap">Check the Supabase dashboard: database size, storage used, and that a recent backup exists.</td><td class="wrap">Pictures and data grow with every listing.</td></tr>
+    <tr><td>Monthly</td><td class="wrap">Read the audit log for anything unexpected, and confirm the four Auto Approve switches are off.</td><td class="wrap">Catches a switch left on after a demo.</td></tr>
+    <tr><td>Quarterly</td><td class="wrap">Update the site's software packages (Next.js, React, Supabase client), then run the build and <code>npm run check</code>.</td><td class="wrap">Security fixes arrive as package updates.</td></tr>
+    <tr><td>Quarterly</td><td class="wrap">Review staff accounts. Remove the role from people who left the team.</td><td class="wrap">Staff can see every account and contact.</td></tr>
+    <tr><td>Yearly</td><td class="wrap">Confirm the domain and all service accounts are still owned by a current AsiaWorks person.</td><td class="wrap">Logins tied to one person are the usual way a site is lost.</td></tr>
+    <tr><td>After any change</td><td class="wrap">Run <code>npm run devlog</code> so the dev log sheet stays complete.</td><td class="wrap">One place to see what changed and when.</td></tr>
+  </table>
+
+  <div class="cols c2" style="margin-top:6mm">
+    <div class="card tint">
+      <h3>Decide the Supabase plan now</h3>
+      <p style="margin:0">At the time of writing, a Supabase project on the free plan is paused after about a week with no activity and has no automatic backups. For a site holding members' details, confirm the plan and make sure daily backups are on.</p>
+    </div>
+    <div class="card">
+      <h3>If something looks wrong</h3>
+      <ul>
+        <li><b>"Data belum bisa dimuat":</b> the site cannot reach Supabase. Check that the project is running.</li>
+        <li><b>A change is not showing:</b> check the latest deployment in Vercel.</li>
+        <li><b>A business is missing:</b> look it up in Bisnis in the console. It states the reason.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Running costs to expect</h2>
+  <p>There is no licence fee for the directory itself, and the map is free. The recurring costs are the Vercel and Supabase plans and the asiaworks.id domain. Which plans fit depends on traffic and on the backup decision above, so they are best confirmed together at handover.</p>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>9</span></div>
+</section>
+
+<!-- 10 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · Maintenance options</span></div>
+  <h1>Four ways to <em>look after it.</em></h1>
+  <p class="lede">The directory is yours either way. The options differ in who does the technical upkeep on page 9 and who is on hand when something needs changing.</p>
+
+  <div class="cols c2">
+    <div class="card plan">
+      <span class="tag y" style="align-self:flex-start">Option A</span>
+      <h3 style="margin-top:2.5mm">Self-managed</h3>
+      <p class="for">For a team with its own developer who knows React and SQL.</p>
+      <ul>
+        <li>AsiaWorks holds every login and does all upkeep.</li>
+        <li>This document, the README and the dev log are the guide.</li>
+        <li>One handover session to walk through the code and console.</li>
+      </ul>
+      <p class="fee">No ongoing fee. Help afterwards is quoted per request.</p>
+    </div>
+    <div class="card plan">
+      <span class="tag y" style="align-self:flex-start">Option B</span>
+      <h3 style="margin-top:2.5mm">On call</h3>
+      <p class="for">For a stable site that needs a hand only now and then.</p>
+      <ul>
+        <li>Fixes and small changes whenever you ask.</li>
+        <li>Each job quoted before work starts.</li>
+        <li>Routine upkeep stays with AsiaWorks.</li>
+      </ul>
+      <p class="fee">Pay per job. No guaranteed response time.</p>
+    </div>
+    <div class="card plan pick">
+      <span class="tag" style="align-self:flex-start">Option C · suggested for the first three months</span>
+      <h3 style="margin-top:2.5mm">Care plan</h3>
+      <p class="for">For peace of mind while the directory fills up after launch.</p>
+      <ul>
+        <li>All the monthly and quarterly upkeep on page 9, done for you.</li>
+        <li>Backups checked, packages updated, rules re-tested.</li>
+        <li>A set amount of small changes each month.</li>
+        <li>Priority response when something breaks.</li>
+        <li>A short monthly note: what was done, how the directory grew.</li>
+      </ul>
+      <p class="fee">Fixed monthly fee, to be agreed.</p>
+    </div>
+    <div class="card plan">
+      <span class="tag g" style="align-self:flex-start">Option D</span>
+      <h3 style="margin-top:2.5mm">Care and growth</h3>
+      <p class="for">For a directory AsiaWorks wants to keep building on.</p>
+      <ul>
+        <li>Everything in the Care plan.</li>
+        <li>A planned feature each cycle, chosen together from page 11.</li>
+        <li>Staff training when the console changes.</li>
+        <li>A quarterly review of usage and what members ask for.</li>
+      </ul>
+      <p class="fee">Monthly fee plus an agreed feature budget.</p>
+    </div>
+  </div>
+
+  <h2>At a glance</h2>
+  <table>
+    <tr><th></th><th>A · Self-managed</th><th>B · On call</th><th>C · Care plan</th><th>D · Care and growth</th></tr>
+    <tr><td>Routine upkeep</td><td>AsiaWorks</td><td>AsiaWorks</td><td>OmniSync Media</td><td>OmniSync Media</td></tr>
+    <tr><td>Fixes</td><td>AsiaWorks</td><td>Per job</td><td>Included</td><td>Included</td></tr>
+    <tr><td>Small changes</td><td>AsiaWorks</td><td>Per job</td><td>Monthly allowance</td><td>Monthly allowance</td></tr>
+    <tr><td>New features</td><td>AsiaWorks</td><td>Per job</td><td>Quoted separately</td><td>Planned each cycle</td></tr>
+    <tr><td>Monthly report</td><td>None</td><td>None</td><td>Yes</td><td>Yes, plus quarterly review</td></tr>
+  </table>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="page">
+  <div class="head"><span class="mark">ASIA<b>W</b>ORKS</span><span>Handover · What comes next</span></div>
+  <h1>Where it can <em>go from here.</em></h1>
+  <p class="lede">Ideas the current build already makes room for, roughly in the order they would pay off.</p>
+
+  <table>
+    <tr><th style="width:46mm">Idea</th><th>What members or staff would get</th><th style="width:40mm">Groundwork already there</th></tr>
+    <tr><td class="wrap">Email or WhatsApp alerts</td><td class="wrap">A member hears about a Hubungkan request without opening the dashboard.</td><td class="wrap">Requests and their status are stored.</td></tr>
+    <tr><td class="wrap">AsiaWorks' own email service</td><td class="wrap">Password resets and confirmations that always arrive.</td><td class="wrap">A setting in Supabase.</td></tr>
+    <tr><td class="wrap">Business pages on Google</td><td class="wrap">Each business can be found by people searching outside the directory.</td><td class="wrap">Pages have stable addresses.</td></tr>
+    <tr><td class="wrap">Paid ads with online payment</td><td class="wrap">A business books and pays for a banner slot itself.</td><td class="wrap">Payments table and rules.</td></tr>
+    <tr><td class="wrap">Paging for a larger directory</td><td class="wrap">Search stays fast beyond 200 businesses.</td><td class="wrap">Search runs in the database.</td></tr>
+    <tr><td class="wrap">Bringing in the Expo sign-ups</td><td class="wrap">Graduates who filled in the form at Expo get an account and a listing without typing it again.</td><td class="wrap">The import tool is built.</td></tr>
+  </table>
+
+  <h2>The dev log</h2>
+  <div class="cols" style="grid-template-columns: 1fr 62mm; align-items:start">
+    <div>
+      <p>Every change since the first build is listed in <code>docs/devlog.csv</code>, which opens in Excel or Google Sheets. Each row has the date, the part of the site, what changed and why, whether it is live, and a reference to the pull request and the exact code change.</p>
+      <p>The sheet is written from the project's own history, so it cannot drift from what was really done. After new work, <code>npm run devlog</code> brings it up to date.</p>
+    </div>
+    <div class="card stat">
+      <b>21</b><span>changes between 2 and 8 October 2026</span>
+      <p class="note" style="margin:2.5mm 0 0">20 live. 1 waiting for approval: the larger map dots for approximate locations.</p>
+    </div>
+  </div>
+
+  <h2>Handover sign-off</h2>
+  <p>Signing below confirms that the access checklist on page 7 is complete and a maintenance option on page 10 has been chosen.</p>
+  <div class="cols c2">
+    <div class="sign">For AsiaWorks Indonesia · name, signature, date</div>
+    <div class="sign">For OmniSync Media · name, signature, date</div>
+  </div>
+  <div class="foot"><span>AsiaWorks Direktori · Handover</span><span>11</span></div>
+</section>
+
+</body>
+</html>

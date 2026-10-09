@@ -13,7 +13,8 @@
     "db:reset": "docker compose -f supabase/local/docker-compose.yml down -v && docker compose -f supabase/local/docker-compose.yml up -d --wait && npm run db:apply",
     "db:types": "docker run --rm --network awdirektori_default -e PG_META_DB_URL=postgresql://postgres:postgres@db:5432/postgres -e PG_META_GENERATE_TYPES=typescript -e PG_META_GENERATE_TYPES_INCLUDED_SCHEMAS=public -e PG_META_GENERATE_TYPES_DETECT_ONE_TO_ONE_RELATIONSHIPS=true supabase/postgres-meta:v0.99.0 node dist/server/server.js > \"app/(aw)/_lib/database.types.ts\"",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
-    "check": "node --env-file=.env.local scripts/check.mjs"
+    "check": "node --env-file=.env.local scripts/check.mjs",
+    "devlog": "node scripts/devlog.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
